@@ -26,6 +26,7 @@ app.get("/", (req, res) => {
 });
 
 app.post("/cluster", upload.single("seq_data"), (req, res) => {
+  // linux 환경이면 python3, Windows 환경이면 python 변경 필요
   const py_cluster_model = spawn("python", ["tmp.py"]); // python cluster model
 
   let result = "";
