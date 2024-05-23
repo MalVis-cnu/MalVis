@@ -26,17 +26,21 @@ def args_parsing():
                         'hierachical:\n' +
                         '\tn_cluster [int]\n' +
                         '\tdistance_threshold [int]\n' +
-                        '\tlinkage [single, complete, average]')
+                        '\tlinkage [single, complete, average]\n'
+                        'kmeans:\n' +
+                        '\tk [int]\n' +
+                        '\tmax_iteration [int]\n')
 
     return parser.parse_args()
 
-
 def input_data_parsing(input_data):
-    l = 100 ###############
+    l = 1000 ###############
+    data = []
     with open(input_data) as f:
-        data = f.read().split('\n')[1:l+1]
+        f.readline()
+        for i in range(l):
+            data.append(f.readline().split(',')[1:-1])
     
-    data = list(map(lambda x: x.split(','), data))[1:]
     return data
 
 def option_parsing(option):
@@ -47,9 +51,7 @@ def option_parsing(option):
 
 
 
-def send_result(clustering_result, distance_matrix):
-    clustering_result['distance_matrix'] = distance_matrix
-    for i in clustering_result.items(): print(i)########################
+# def send_result(clustering_result, distance_matrix):
     # json_data = json.dumps(clustering_result)
 
     # server_address = '127.0.0.1'
@@ -60,16 +62,16 @@ def send_result(clustering_result, distance_matrix):
     # s.send(json_data.encode('utf-8'))
     # s.close()
 
-def send_error():
-    msg = traceback.format_exc()
+# def send_error():
+#     msg = traceback.format_exc()
     
-    server_address = '127.0.0.1'
-    server_port = 12345
+#     server_address = '127.0.0.1'
+#     server_port = 12345
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((server_address, server_port))
-    s.send(msg.encode('utf-8'))
-    s.close()
+#     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#     s.connect((server_address, server_port))
+#     s.send(msg.encode('utf-8'))
+#     s.close()
 
 
 
@@ -91,8 +93,10 @@ def main(args):
     distance_matrix = simmilarity.get_simmilarity(input_data=input_data, simmilarity_method=simmilarity_method, option=option_parsing(args.simmilarity_option))
 
     clustering_result = clustering.do_clustering(distance_matrix=distance_matrix, clustering_method=clustering_method, option=option_parsing(args.clustering_option))
-
-    send_result(clustering_result, distance_matrix)
+    # for i in clustering_result.items(): print(i)
+    print(json.dumps(clustering_result))
+    
+    # send_result(clustering_result, distance_matrix)
 
 
 # ###############################
@@ -112,4 +116,5 @@ if __name__== '__main__':
     try:
         main(args)
     except:
-        send_error()
+        traceback.print_exc()
+        # send_error()
