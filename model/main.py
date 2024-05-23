@@ -33,7 +33,7 @@ def args_parsing():
 
 def input_data_parsing(input_data):
     l = 100 ###############
-    with open('data.csv') as f:
+    with open(input_data) as f:
         data = f.read().split('\n')[1:l+1]
     
     data = list(map(lambda x: x.split(','), data))[1:]
@@ -49,7 +49,7 @@ def option_parsing(option):
 
 def send_result(clustering_result, distance_matrix):
     clustering_result['distance_matrix'] = distance_matrix
-    print(clustering_result['clusters'])########################
+    for i in clustering_result.items(): print(i)########################
     # json_data = json.dumps(clustering_result)
 
     # server_address = '127.0.0.1'
