@@ -1,3 +1,5 @@
+
+
 def _silhouette_score(clusters, distance_matrix):
     scores = []
     for i in range(len(distance_matrix)):
@@ -22,6 +24,30 @@ def _silhouette_score(clusters, distance_matrix):
         scores.append((b-a) / max(a,b))
     return sum(scores)/len(scores)
     
+def _get_hirachical_clusters(children, n_cluster):
+    l = len(children) + 1
+    arr = [0 for i in range(l)]
+    dic = {i:[] for i in range(l)}
+
+    for i,(a,b) in enumerate(children):
+        if i == l-n_cluster: break
+
+        if a < l and b < l:
+            dic[i] += [a,b]
+            arr[i] = i
+        elif a < l and b >= l:
+            dic[arr[b-l]] += [a]
+            arr[i] = arr[b-l]
+        elif a >= l and b >= l:
+            dic[arr[b-l]] += dic[arr[a-l]]
+            dic[arr[a-l]] = []
+            arr[a-l] = arr[b-l]
+            arr[i] = arr[b-l]
+    clusters = []
+    for i in dic.values():
+        if i:
+            clusters.append(list(map(int, i)))
+    return clusters
 
 
 def do_clustering(distance_matrix, clustering_method, option):
@@ -36,22 +62,70 @@ def _hierachical_clustering(distance_matrix, option):
         linkage = option['linkage']
     else:
         linkage = 'single'
+    if 'n_cluster' in option:
+        n_cluster = int(option['n_cluster'])
+    else:
+        n_cluster = 1
 
     model = AgglomerativeClustering(metric='precomputed', distance_threshold=0, n_clusters=None, linkage=linkage).fit(distance_matrix)
-    return {'children'      : model.children_.tolist(),
-            'distances'     : model.distances_.tolist(),
-            'labels'        : model.labels_.tolist(),}
+    if n_cluster > 1:
+        clusters = _get_hirachical_clusters(model.children_.tolist(), n_cluster)
+        silhouette_score = _silhouette_score(clusters, distance_matrix)
+    else:
+        clusters = None
+        silhouette_score = None
+    
+    ########################################33
+    # import numpy as np
+    # from matplotlib import pyplot as plt
+    # from scipy.cluster.hierarchy import dendrogram
+    # def plot_dendrogram(model, **kwargs):
+    #     # Create linkage matrix and then plot the dendrogram
+
+    #     # create the counts of samples under each node
+    #     counts = np.zeros(model.children_.shape[0])
+    #     n_samples = len(model.labels_)
+    #     for i, merge in enumerate(model.children_):
+    #         current_count = 0
+    #         for child_idx in merge:
+    #             if child_idx < n_samples:
+    #                 current_count += 1  # leaf node
+    #             else:
+    #                 current_count += counts[child_idx - n_samples]
+    #         counts[i] = current_count
+
+    #     linkage_matrix = np.column_stack(
+    #         [model.children_, model.distances_, counts]
+    #     ).astype(float)
+    #     # Plot the corresponding dendrogram
+    #     dendrogram(linkage_matrix, **kwargs)
+    #     plt.title("Hierarchical Clustering Dendrogram")
+    # # plot the top three levels of the dendrogram
+    # # plot_dendrogram(model, truncate_mode=None, leaf_label_func=llf, orientation='left')
+    # plot_dendrogram(model, truncate_mode=None, orientation='left')
+    # # plot_dendrogram(model, truncate_mode="level", p=3)
+    # plt.xlabel("distance")
+    # plt.show()
+    ########################################33
+
+    return {'children'          : model.children_.tolist(),
+            'distances'         : model.distances_.tolist(),
+            'labels'            : model.labels_.tolist(),
+            'clusters'          : clusters,
+            'silhouette_score'  : silhouette_score,
+            'distance_matrix'   : distance_matrix,
+            }
 
 def _kmeans_clustering(distance_matrix, option):
     import random
-    if 'k' in option:
+    if '' in option:
         k = int(option['k'])
     else:
         k = 2
     if 'max_iteration' in option:
         max_iteration = int(option['max_iteration'])
     else:
-        max_iteration = int(1e6)
+        max_iteration = int(100)
 
     l = list(range(len(distance_matrix)))
     centers = random.sample(l, k)
@@ -88,23 +162,19 @@ def _kmeans_clustering(distance_matrix, option):
         s = str(new_centers)
         
         score = _silhouette_score([clusters[i] +[centers[i]] for i in range(k)], distance_matrix)
-        ############
-        print(iter)
-        print(centers, [clusters[i] + [centers[i]] for i in range(k)])
-        print('score', _silhouette_score([clusters[i] + [centers[i]] for i in range(k)], distance_matrix))
-        ############
 
         if s in did:
             break
         if iter >= max_iteration:
-            print('iteration_exceed...')
             break
         did.add(s)
         centers = new_centers.copy()
         iter += 1
 
-    return {'clusters':     [clusters[i] + [centers[i]] for i in range(k)],
-            'centers':      centers}
+    return {'clusters':         [clusters[i] + [centers[i]] for i in range(k)],
+            'centers':          centers,
+            'silhouette_score': _silhouette_score([clusters[i] + [centers[i]] for i in range(k)], distance_matrix),
+            'distance_matrix': distance_matrix}
 
     
 
