@@ -1,0 +1,16 @@
+.header {
+  background-color: #5b9dff;
+  display: flex;
+}
+
+.title {
+  color: white;
+  font-size: 2.5em;
+  line-height: 40px;
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  padding: 8px 8px 8px 0;
+}

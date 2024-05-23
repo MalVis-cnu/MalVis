@@ -1,0 +1,12 @@
+.side-bar {
+  background: #efefef;
+  display: flex;
+  flex-direction: column;
+  width: 20%;
+  height: 100vh;
+  padding: 20px 0 0 0;
+}
+
+.side-bar > input {
+  margin: 0 0 12px 10%;
+}
