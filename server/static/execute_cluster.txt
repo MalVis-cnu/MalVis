@@ -1,6 +1,0 @@
-../../model/main.py ^
--i ./public/uploads/example.csv ^
---simmilarity-method jaccard ^
---simmilarity-option ngram 2 ^
---clustering-method hierachical ^
---clustering-option k 3
