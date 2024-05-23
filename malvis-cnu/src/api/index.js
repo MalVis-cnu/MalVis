@@ -2,11 +2,11 @@ import axios from "axios";
 
 const instance = axios.create({
   headers: {
-    "Content-Type": "application/json",
+    "Content-Type": "multipart/form-data",
   },
-  baseURL: "http://localhost:8080",
+  baseURL: "http://localhost:8888",
 });
 
 export const createPost = (data) => {
-  return instance.post();
+  return instance.post("/cluster", data);
 };

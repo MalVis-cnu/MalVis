@@ -19,7 +19,7 @@ const Aside = ({ onSendResult }) => {
   };
 
   const uploadData = (data) => {
-    setInputData({ ...inputData, data });
+    setInputData({ ...inputData, seq_data: data });
     setIsUploaded(true);
   };
 
@@ -27,7 +27,7 @@ const Aside = ({ onSendResult }) => {
     if (!isUploaded) {
       return alert("분석할 데이터 파일을 업로드해주세요.");
     }
-    const response = await createPost(inputData);
+    const response = await createPost({ seq_data: inputData.seq_data });
     console.log(response);
     onSendResult(response);
   };

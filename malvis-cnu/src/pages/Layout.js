@@ -8,6 +8,7 @@ const Layout = () => {
   const [result, setResult] = useState({});
 
   const handleResult = (result) => {
+    console.log(result);
     setResult(result);
   };
 
