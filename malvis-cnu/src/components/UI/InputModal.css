@@ -1,0 +1,63 @@
+.input-modal {
+  position: fixed;
+  top: 30vh;
+  left: 10%;
+  width: 25%;
+  z-index: 100;
+  overflow: hidden;
+  background: white;
+}
+
+#algorithms {
+  display: flex;
+  margin: 4px 0 12px 0;
+}
+
+.input-number {
+  width: 20%;
+}
+
+.name {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.hier-opt {
+  margin: 0 12px 0 0;
+}
+
+.item-of-hier {
+  margin-bottom: 8px;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.format {
+  padding: 8px;
+}
+
+.cancel_btn {
+  background: black;
+  opacity: 0.25;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 1em;
+  padding: 8px 12px 8px 12px;
+  margin: 0 8px 0 0;
+  cursor: pointer;
+}
+
+.apply_btn {
+  background: #5b9dff;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 1em;
+  padding: 8px 12px 8px 12px;
+  cursor: pointer;
+}

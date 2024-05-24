@@ -1,0 +1,27 @@
+.file_btn {
+  background: #5b9dff;
+  border: none;
+  border-radius: 15px;
+  color: white;
+  font-size: 1em;
+  text-align: center;
+  padding: 12px 0 12px 0;
+  margin: 20px 30px 0 30px;
+  cursor: pointer;
+}
+
+.file-name {
+  margin: 0 16px 0 16px;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.msg {
+  text-align: center;
+}
+
+#file {
+  display: none;
+}
