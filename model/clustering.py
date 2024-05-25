@@ -12,6 +12,7 @@ def _silhouette_score(clusters, distance_matrix):
             a = sum([distance_matrix[i][j] for j in clusters[k_me]]) / (len(clusters[k_me])-1)
 
         min_dist = 1
+        min_idx = 0
         for idx in range(len(distance_matrix)):
             if idx in clusters[k_me]:
                 continue
@@ -53,6 +54,7 @@ def _get_hirachical_clusters(children, n_cluster):
     for i in dic.values():
         if i:
             clusters.append(list(map(int, i)))
+            
     return clusters
 
 
@@ -62,7 +64,7 @@ def do_clustering(distance_matrix, clustering_method, option):
 
 
 
-def _hierachical_clustering(distance_matrix, option):
+def _hierarchical_clustering(distance_matrix, option):
     from sklearn.cluster import AgglomerativeClustering
     if 'linkage' in option:
         linkage = option['linkage']
@@ -193,5 +195,5 @@ def _kmeans_clustering(distance_matrix, option):
 
     
 
-valid_clustering_methods = {'hierachical': _hierachical_clustering,
+valid_clustering_methods = {'hierarchical': _hierarchical_clustering,
                             'kmeans': _kmeans_clustering}
