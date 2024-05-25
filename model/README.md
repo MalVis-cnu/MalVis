@@ -1,19 +1,19 @@
 # 사용법
 
 ```
-usage: main.py [-h] [-i INPUT_DATA] [--simmilarity-method SIMMILARITY_METHOD]
-               [--simmilarity-option [SIMMILARITY_OPTION ...]]
-               [--clustering-method CLUSTERING_METHOD]
-               [--clustering-option [CLUSTERING_OPTION ...]]
+usage: main.py [-h] [-i INPUT_DATA] [--simmilarity-method SIMMILARITY_METHOD] [--simmilarity-option [SIMMILARITY_OPTION ...]]
+               [--clustering-method CLUSTERING_METHOD] [--clustering-option [CLUSTERING_OPTION ...]]
 
 options:
   -h, --help            show this help message and exit
   -i INPUT_DATA         input file path
   --simmilarity-method SIMMILARITY_METHOD
-                        select simmilarity method ['jaccard']
+                        select simmilarity method ['jaccard', 'cosine']
   --simmilarity-option [SIMMILARITY_OPTION ...]
                         input simmilarity options [option_name option_value]*
                         jaccard:
+                        	ngram [int]
+                        cosine:
                         	ngram [int]
   --clustering-method CLUSTERING_METHOD
                         select clustering method ['hierachical', 'kmeans']
@@ -26,6 +26,7 @@ options:
                         kmeans:
                         	k [int]
                         	max_iteration [int]
+
 ```
 사용 예시
 ```
@@ -40,7 +41,7 @@ python3 main.py \
 # windows
 python main.py ^
 -i ./data.csv ^
---simmilarity-method jaccard ^
+--simmilarity-method cosine ^
 --simmilarity-option ngram 2 ^
 --clustering-method kmeans ^
 --clustering-option k 3 max_iteration 50

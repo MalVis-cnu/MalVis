@@ -1,7 +1,5 @@
 import argparse
 import json
-import socket
-import traceback
 
 import simmilarity
 import clustering
@@ -17,7 +15,9 @@ def args_parsing():
     parser.add_argument('--simmilarity-option', action='append', nargs='*',
                         help='input simmilarity options [option_name option_value]*\n' +
                         'jaccard:\n' +
-                        '\tngram [int]')
+                        '\tngram [int]\n' +
+                        'cosine:\n' +
+                        '\tngram [int]\n')
     
     parser.add_argument('--clustering-method', action='store',
                         help=f'select clustering method {list(clustering.valid_clustering_methods.keys())}')
@@ -34,7 +34,7 @@ def args_parsing():
     return parser.parse_args()
 
 def input_data_parsing(input_data):
-    l = 1000 ###############
+    l = 100 ###############
     data = []
     with open(input_data) as f:
         f.readline()
@@ -47,31 +47,6 @@ def option_parsing(option):
     if option:
         option = option[0]
         return {option[i]: option[i+1] for i in range(0,len(option),2)}
-
-
-
-
-# def send_result(clustering_result, distance_matrix):
-    # json_data = json.dumps(clustering_result)
-
-    # server_address = '127.0.0.1'
-    # server_port = 12345
-
-    # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # s.connect((server_address, server_port))
-    # s.send(json_data.encode('utf-8'))
-    # s.close()
-
-# def send_error():
-#     msg = traceback.format_exc()
-    
-#     server_address = '127.0.0.1'
-#     server_port = 12345
-
-#     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#     s.connect((server_address, server_port))
-#     s.send(msg.encode('utf-8'))
-#     s.close()
 
 
 
@@ -95,26 +70,10 @@ def main(args):
     clustering_result = clustering.do_clustering(distance_matrix=distance_matrix, clustering_method=clustering_method, option=option_parsing(args.clustering_option))
     # for i in clustering_result.items(): print(i)
     print(json.dumps(clustering_result))
-    
-    # send_result(clustering_result, distance_matrix)
 
-
-# ###############################
-#     while True:
-#         try:
-#             exec(input('>'))
-#         except KeyboardInterrupt:
-#             exit(0)
-#         except:
-#             import traceback
-#             print(traceback.print_exc())
-# ###############################
 
 
 if __name__== '__main__':
     args = args_parsing()
-    try:
-        main(args)
-    except:
-        traceback.print_exc()
-        # send_error()
+
+    main(args)
