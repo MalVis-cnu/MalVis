@@ -31,7 +31,8 @@ app.get("/", (req, res) => {
  */
 app.post("/cluster", upload.single("seq_data"), (req, res) => {
   // linux 환경이면 python3, Windows 환경이면 python 변경 필요
-  const isWindows = process.platform === "win32";
+  const isWindows = process.platform === "win32"; // 운영체제 구분을 위한 boolean
+  // Linux인 경우 python3, 윈도우인 경우 python 커맨드를 실행한다.
   const pythonCommand = isWindows ? "python" : "python3";
   const modelScriptPath = path.join(__dirname, "../../model/main.py");
   const filePath = path.join(__dirname, req.file.path);
@@ -45,7 +46,7 @@ app.post("/cluster", upload.single("seq_data"), (req, res) => {
     "ngram",
     "2",
     "--clustering-method",
-    "hierachical",
+    "hierarchical",
     "--clustering-option",
     "k",
     "3",
