@@ -64,7 +64,7 @@ def do_clustering(distance_matrix, clustering_method, option):
 
 
 
-def _hierachical_clustering(distance_matrix, option):
+def _hierarchical_clustering(distance_matrix, option):
     from sklearn.cluster import AgglomerativeClustering
     if 'linkage' in option:
         linkage = option['linkage']
@@ -195,5 +195,5 @@ def _kmeans_clustering(distance_matrix, option):
 
     
 
-valid_clustering_methods = {'hierachical': _hierachical_clustering,
+valid_clustering_methods = {'hierarchical': _hierarchical_clustering,
                             'kmeans': _kmeans_clustering}

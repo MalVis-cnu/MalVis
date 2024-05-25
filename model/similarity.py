@@ -4,8 +4,8 @@ def _ngram(input_data, n):
 
     
 
-def get_simmilarity(simmilarity_method, input_data, option):
-    return valid_simmilarity_methods[simmilarity_method](input_data, option)
+def get_similarity(similarity_method, input_data, option):
+    return valid_similarity_methods[similarity_method](input_data, option)
 
 
 def _get_cosine(input_data, option):
@@ -24,7 +24,7 @@ def _get_cosine(input_data, option):
             calculated = 1 - _coinse_score(input_data[i], input_data[j])
             distance_matrix[i][j] = calculated
             distance_matrix[j][i] = calculated
-    for i in distance_matrix: print(i)
+            
     return distance_matrix
 
 def _coinse_score(i1, i2):
@@ -93,5 +93,5 @@ def _jaccard_score(i1, i2):
 
 
 
-valid_simmilarity_methods = {'jaccard': _get_jaccard,
+valid_similarity_methods = {'jaccard': _get_jaccard,
                              'cosine':  _get_cosine}

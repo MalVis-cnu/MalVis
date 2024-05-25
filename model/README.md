@@ -1,25 +1,25 @@
 # 사용법
 
 ```
-usage: main.py [-h] [-i INPUT_DATA] [--simmilarity-method SIMMILARITY_METHOD] [--simmilarity-option [SIMMILARITY_OPTION ...]]
+usage: main.py [-h] [-i INPUT_DATA] [--similarity-method SIMILARITY_METHOD] [--similarity-option [SIMILARITY_OPTION ...]]
                [--clustering-method CLUSTERING_METHOD] [--clustering-option [CLUSTERING_OPTION ...]]
 
 options:
   -h, --help            show this help message and exit
   -i INPUT_DATA         input file path
-  --simmilarity-method SIMMILARITY_METHOD
-                        select simmilarity method ['jaccard', 'cosine']
-  --simmilarity-option [SIMMILARITY_OPTION ...]
-                        input simmilarity options [option_name option_value]*
+  --similarity-method SIMILARITY_METHOD
+                        select similarity method ['jaccard', 'cosine']
+  --similarity-option [SIMILARITY_OPTION ...]
+                        input similarity options [option_name option_value]*
                         jaccard:
                         	ngram [int]
                         cosine:
                         	ngram [int]
   --clustering-method CLUSTERING_METHOD
-                        select clustering method ['hierachical', 'kmeans']
+                        select clustering method ['hierarchical', 'kmeans']
   --clustering-option [CLUSTERING_OPTION ...]
                         input clustering options [option_name option_value]*
-                        hierachical:
+                        hierarchical:
                         	n_cluster [int]
                         	distance_threshold [int]
                         	linkage [single, complete, average]
@@ -33,16 +33,16 @@ options:
 # linux
 python3 main.py \
 -i ./data.csv \
---simmilarity-method jaccard \
---simmilarity-option ngram 2 \
---clustering-method hierachical \
+--similarity-method jaccard \
+--similarity-option ngram 2 \
+--clustering-method hierarchical \
 --clustering-option n_cluster 3 linkage single;
 
 # windows
 python main.py ^
 -i ./data.csv ^
---simmilarity-method cosine ^
---simmilarity-option ngram 2 ^
+--similarity-method cosine ^
+--similarity-option ngram 2 ^
 --clustering-method kmeans ^
 --clustering-option k 3 max_iteration 50
 ```
@@ -64,7 +64,7 @@ python main.py ^
 # 출력
 JSON 데이터, 클러스터링 알고리즘 별 출력 데이터가 아래와 같음
 ```
-hierachical:
+hierarchical:
     {
         'children' :
             N개의 악성코드 데이터가 존재할 때,
