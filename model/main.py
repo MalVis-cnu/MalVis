@@ -34,14 +34,17 @@ def args_parsing():
     return parser.parse_args()
 
 def input_data_parsing(input_data):
-    l = 100 ###############
+    l = 20 ###############
     data = []
+    hash = []
     with open(input_data) as f:
         f.readline()
         for i in range(l):
-            data.append(f.readline().split(',')[1:-1])
+            line = f.readline().split(',')[:-1]
+            data.append(line[1:])
+            hash.append(line[0])
     
-    return data
+    return data, hash
 
 def option_parsing(option):
     if option:
@@ -52,7 +55,7 @@ def option_parsing(option):
 
 
 def main(args):
-    input_data = input_data_parsing(args.input_data)
+    input_data, hash = input_data_parsing(args.input_data)
 
     similarity_method = args.similarity_method
     if similarity_method not in similarity.valid_similarity_methods:
@@ -68,6 +71,8 @@ def main(args):
     distance_matrix = similarity.get_similarity(input_data=input_data, similarity_method=similarity_method, option=option_parsing(args.similarity_option))
 
     clustering_result = clustering.do_clustering(distance_matrix=distance_matrix, clustering_method=clustering_method, option=option_parsing(args.clustering_option))
+    clustering_result['hash'] = hash
+    
     # for i in clustering_result.items(): print(i)
     print(json.dumps(clustering_result))
 
