@@ -6,9 +6,13 @@ def _silhouette_score(clusters, distance_matrix):
         for k, cluster in enumerate(clusters):
             if i in cluster:
                 k_me = k
-        a = sum([distance_matrix[i][j] for j in clusters[k_me]]) / (len(clusters[k_me])-1)
+        if len(clusters[k_me]) == 1:
+            a = 1
+        else:
+            a = sum([distance_matrix[i][j] for j in clusters[k_me]]) / (len(clusters[k_me])-1)
 
         min_dist = 1
+        min_idx = 0
         for idx in range(len(distance_matrix)):
             if idx in clusters[k_me]:
                 continue
@@ -26,27 +30,31 @@ def _silhouette_score(clusters, distance_matrix):
     
 def _get_hirachical_clusters(children, n_cluster):
     l = len(children) + 1
-    arr = [0 for i in range(l)]
+
     dic = {i:[] for i in range(l)}
 
     for i,(a,b) in enumerate(children):
-        if i == l-n_cluster: break
-
-        if a < l and b < l:
-            dic[i] += [a,b]
-            arr[i] = i
-        elif a < l and b >= l:
-            dic[arr[b-l]] += [a]
-            arr[i] = arr[b-l]
-        elif a >= l and b >= l:
-            dic[arr[b-l]] += dic[arr[a-l]]
-            dic[arr[a-l]] = []
-            arr[a-l] = arr[b-l]
-            arr[i] = arr[b-l]
+        if i < l-n_cluster:
+            if a < l and b < l:
+                dic[i] += [a,b]
+            elif a < l and b >= l:
+                dic[i] += [a] + dic[b-l]
+                dic[b-l] = []
+            elif a >= l and b >= l:
+                dic[i] += dic[a-l] + dic[b-l]
+                dic[a-l] = []
+                dic[b-l] = []
+        
+        else:
+            if a < l:
+                dic[i] = [a]
+            elif a < l and b < l:
+                dic[i] = [a, b]
     clusters = []
     for i in dic.values():
         if i:
             clusters.append(list(map(int, i)))
+            
     return clusters
 
 
@@ -56,7 +64,7 @@ def do_clustering(distance_matrix, clustering_method, option):
 
 
 
-def _hierachical_clustering(distance_matrix, option):
+def _hierarchical_clustering(distance_matrix, option):
     from sklearn.cluster import AgglomerativeClustering
     if 'linkage' in option:
         linkage = option['linkage']
@@ -75,7 +83,9 @@ def _hierachical_clustering(distance_matrix, option):
         clusters = None
         silhouette_score = None
     
-    ########################################33
+    ########################################
+    # draw dendrogram with matploylib.pyplot
+    ########################################
     # import numpy as np
     # from matplotlib import pyplot as plt
     # from scipy.cluster.hierarchy import dendrogram
@@ -185,5 +195,5 @@ def _kmeans_clustering(distance_matrix, option):
 
     
 
-valid_clustering_methods = {'hierachical': _hierachical_clustering,
+valid_clustering_methods = {'hierarchical': _hierarchical_clustering,
                             'kmeans': _kmeans_clustering}
