@@ -9,6 +9,11 @@ const path = require("path");
 const publicPath = path.join(__dirname, "public");
 app.use(express.static(publicPath));
 
+// cors 에러 해결을 위한 코드 추가
+app.use(express.json());
+var cors = require("cors");
+app.use(cors());
+
 // 파일 저장을 위한 multer 설정
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -47,8 +52,8 @@ app.post("/cluster", upload.single("seq_data"), (req, res) => {
     "--clustering-method",
     "hierachical",
     "--clustering-option",
-    "k",
-    "3",
+    "n_cluster",
+    "2",
   ];
   const py_cluster_model = spawn(pythonCommand, args); // python cluster model
 
