@@ -9,6 +9,7 @@ const Aside = ({ onSendResult }) => {
   const [modal, setModal] = useState(false);
   const [inputData, setInputData] = useState({});
   const [isUploaded, setIsUploaded] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleModal = (value) => {
     setModal(value);
@@ -27,8 +28,9 @@ const Aside = ({ onSendResult }) => {
     if (!isUploaded) {
       return alert("분석할 데이터 파일을 업로드해주세요.");
     }
+    setIsProcessing(true);
     const response = await createPost({ seq_data: inputData.seq_data });
-    console.log(response);
+    setIsProcessing(false);
     onSendResult(response);
   };
 
@@ -38,8 +40,12 @@ const Aside = ({ onSendResult }) => {
       <aside className="side-bar">
         <UploadFile onUpload={uploadData} />
         <Button onClick={() => handleModal(true)}>설정</Button>
-        <Button onClick={handleSubmit} className="start">
-          분석 시작
+        <Button
+          onClick={handleSubmit}
+          className={isProcessing ? "processing" : "start"}
+          isDisabled={isProcessing}
+        >
+          {isProcessing ? "분석 중..." : "분석 시작"}
         </Button>
       </aside>
     </>
