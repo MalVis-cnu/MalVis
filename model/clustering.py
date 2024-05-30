@@ -123,7 +123,6 @@ def _hierarchical_clustering(distance_matrix, option):
             'labels'            : model.labels_.tolist(),
             'clusters'          : clusters,
             'silhouette_score'  : silhouette_score,
-            'distance_matrix'   : distance_matrix,
             }
 
 def _kmeans_clustering(distance_matrix, option):
@@ -184,7 +183,7 @@ def _kmeans_clustering(distance_matrix, option):
     return {'clusters':         [clusters[i] + [centers[i]] for i in range(k)],
             'centers':          centers,
             'silhouette_score': _silhouette_score([clusters[i] + [centers[i]] for i in range(k)], distance_matrix),
-            'distance_matrix': distance_matrix}
+            }
 
     
 
