@@ -64,6 +64,27 @@ python main.py ^
 # 출력
 JSON 데이터, 클러스터링 알고리즘 별 출력 데이터가 아래와 같음
 ```
+공통 :
+    {
+        'silhouette_score'  :
+            클러스터링 결과의 실루엣 스코어
+
+        'distance_matrix'   :
+            클러스터링에 사용된 distance matrix.
+            악성코드 i와 j의 거리는 distance_matrix[i][j]
+            이때 i,j는 최초 입력의 i,j와 같음 (labels와 관련이 없음)
+        
+        'hash' :
+            hash[i]는 i번 악성코드의 해쉬값
+            이때 i는 최초 입력의 i와 같음 (labels와 관련이 없음)
+        
+        'sequence_data' :
+            sequence_data[i]는 i번 악성코드의 시퀀스 데이터
+            이때 i는 최초 입력의 i와 같음 (labels와 관련이 없음)
+
+        'similar_sequence_matrix' :
+            similar_sequence_matrix[i][j]는 악성코드 i와 j의 유사한 시퀀스 목록
+    }
 hierarchical:
     {
         'children' :
@@ -89,18 +110,6 @@ hierarchical:
             
         'clusters' :
             n_clusters개의 클러스터로 악성코드를 묶은 배열
-
-        'silhouette_score'  :
-            클러스터링 결과의 실루엣 스코어
-
-        'distance_matrix'   :
-            클러스터링에 사용된 distance matrix.
-            악성코드 i와 j의 거리는 distance_matrix[i][j]
-            이때 i,j는 최초 입력의 i,j와 같음 (labels와 관련이 없음)
-        
-        'hash' :
-            hash[i]는 악성코드의 해쉬값
-            이때 i는 최초 입력의 i와 같음 (labels와 관련이 없음)
     }
 
 kmeans:
@@ -110,15 +119,6 @@ kmeans:
 
         'centers' :
             centers[i]는 clusters[i]의 중심이 되는 악성코드 번호
-
-        'silhouette_score' :
-            hierarchical과 동일
-
-        'distance_matrix': 
-            hierarchical과 동일
-        
-        'hash' :
-            hierarchical과 동일
     }
 ```
 
