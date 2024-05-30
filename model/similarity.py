@@ -1,5 +1,5 @@
 def _ngram(input_data, n):
-    return [{tuple(i[j+k] for k in range(n)) for j in range(1, len(i)-n)} for i in input_data]
+    return [[str( tuple( i[j+k] for k in range(n) ) ) for j in range(1, len(i)-n)] for i in input_data]
 
 
     
@@ -18,6 +18,7 @@ def _get_cosine(input_data, option):
     input_data = _ngram(input_data, ngram)
 
     distance_matrix = [[0 for _ in range(length)] for __ in range(length)]
+    similar_sequence_matrix = [[0 for _ in range(length)] for __ in range(length)]
 
     for i in range(length):
         for j in range(length):
@@ -25,7 +26,12 @@ def _get_cosine(input_data, option):
             distance_matrix[i][j] = calculated
             distance_matrix[j][i] = calculated
             
-    return distance_matrix
+            similar_sequence = set(input_data[i]).intersection(set(input_data[j]))
+            similar_sequence = list(map(str, similar_sequence))
+            similar_sequence_matrix[i][j] = similar_sequence
+            similar_sequence_matrix[j][i] = similar_sequence
+
+    return distance_matrix, similar_sequence_matrix
 
 def _coinse_score(i1, i2):
     import math
@@ -56,8 +62,6 @@ def _coinse_score(i1, i2):
     return cosine_similarity
 
 
-
-
 def _get_jaccard(input_data, option):
     if 'ngram' in option:
         ngram = int(option['ngram'])
@@ -68,30 +72,28 @@ def _get_jaccard(input_data, option):
     input_data = _ngram(input_data, ngram)
 
     distance_matrix = [[0 for _ in range(length)] for __ in range(length)]
+    similar_sequence_matrix = [[0 for _ in range(length)] for __ in range(length)]
 
     for i in range(length):
         for j in range(length):
             calculated = 1 - _jaccard_score(input_data[i], input_data[j])
             distance_matrix[i][j] = calculated
             distance_matrix[j][i] = calculated
+            
+            similar_sequence = set(input_data[i]).intersection(set(input_data[j]))
+            similar_sequence = list(map(str, similar_sequence))
+            similar_sequence_matrix[i][j] = similar_sequence
+            similar_sequence_matrix[j][i] = similar_sequence
 
-    return distance_matrix
+    return distance_matrix, similar_sequence_matrix
 
 def _jaccard_score(i1, i2):
-    union = set()
-    for i in i1:
-        union.add(i)
-    for i in i2:
-        union.add(i)
-
-    intersection = set()
-    for i in i1:
-        if i in i2:
-            intersection.add(i)
-    
+    i1 = set(i1)
+    i2 = set(i2)
+    intersection = i1.intersection(i2)
+    union = i2.union(i2)
     return len(intersection) / len(union)
 
 
-
 valid_similarity_methods = {'jaccard': _get_jaccard,
-                             'cosine':  _get_cosine}
+                            'cosine':  _get_cosine}

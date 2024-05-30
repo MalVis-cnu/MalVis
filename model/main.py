@@ -34,13 +34,13 @@ def args_parsing():
     return parser.parse_args()
 
 def input_data_parsing(input_data):
-    l = 20 ###############
     data = []
     hash = []
     with open(input_data) as f:
-        f.readline()
-        for i in range(l):
+        line = f.readline()
+        while True:
             line = f.readline().split(',')[:-1]
+            if not line: break
             data.append(line[1:])
             hash.append(line[0])
     
@@ -68,10 +68,16 @@ def main(args):
         exit(0)
     
     
-    distance_matrix = similarity.get_similarity(input_data=input_data, similarity_method=similarity_method, option=option_parsing(args.similarity_option))
+    distance_matrix, similar_sequence_matrix = similarity.get_similarity(input_data=input_data, similarity_method=similarity_method, option=option_parsing(args.similarity_option))
 
     clustering_result = clustering.do_clustering(distance_matrix=distance_matrix, clustering_method=clustering_method, option=option_parsing(args.clustering_option))
+
+    
+    clustering_result['distance_matrix'] = distance_matrix
     clustering_result['hash'] = hash
+    clustering_result['sequence_data'] = input_data
+    clustering_result['similar_sequence_matrix'] = similar_sequence_matrix
+
     
     # for i in clustering_result.items(): print(i)
     print(json.dumps(clustering_result))
