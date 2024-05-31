@@ -57,6 +57,8 @@ app.post("/cluster", upload.single("seq_data"), (req, res) => {
     "--clustering-option",
     "n_cluster",
     "2",
+    "linkage",
+    "single",
   ];
 
   let is_csv = req.file.filename.endsWith(".csv");
