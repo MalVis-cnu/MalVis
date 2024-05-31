@@ -10,6 +10,18 @@ const path = require("path");
 const publicPath = path.join(__dirname, "public");
 app.use(express.static(publicPath));
 
+// 업로드 폴더 존재 여부 검증
+const uploadsPath = publicPath + "/uploads";
+if (!fs.existsSync(uploadsPath)) {
+  console.log(`${uploadsPath} 폴더가 존재하지 않습니다. 폴더를 생성합니다.`);
+  try {
+    fs.mkdirSync(uploadsPath, { recursive: true });
+    console.log(`${uploadsPath} 폴더가 성공적으로 생성되었습니다.`);
+  } catch (err) {
+    console.error(`폴더 생성 중 오류 발생: ${err.message}`);
+  }
+}
+
 // 파일 저장을 위한 multer 설정
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -76,7 +88,6 @@ app.post("/cluster", upload.single("seq_data"), (req, res) => {
   } else {
     // 업로드를 위해 파일이 JSON인 경우 처리 (임시)
     const file_content = fs.readFileSync(filePath);
-    console.log(file_content);
     res.status(200).send(file_content);
   }
 });
