@@ -1,6 +1,7 @@
 const express = require("express");
 const { spawn } = require("child_process");
 const multer = require("multer");
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 8888;
@@ -20,7 +21,7 @@ const storage = multer.diskStorage({
     cb(null, "./public/uploads/"); // 파일이 저장될 경로
   },
   filename: function (req, file, cb) {
-    cb(null, "example.csv"); // 파일 이름 설정
+    cb(null, "example" + path.extname(file.originalname)); // 파일 이름 설정
   },
 });
 
@@ -56,23 +57,32 @@ app.post("/cluster", upload.single("seq_data"), (req, res) => {
     "n_cluster",
     "2",
   ];
-  const py_cluster_model = spawn(pythonCommand, args); // python cluster model
 
+  let is_csv = req.file.filename.endsWith(".csv");
   let result = "";
-  py_cluster_model.stdout.on("data", (data) => {
-    result += data.toString();
-  });
 
-  py_cluster_model.stderr.on("data", (data) => {
-    console.error(`stderr: ${data}`); // 에러 로그 출력
-  });
+  if (is_csv) {
+    const py_cluster_model = spawn(pythonCommand, args); // python cluster model
+    py_cluster_model.stdout.on("data", (data) => {
+      result += data.toString();
+    });
 
-  py_cluster_model.on("close", (code) => {
-    console.log(`Python script exited with code ${code}`);
-    console.log(result);
-    console.log(req.file.path);
-    res.status(200).send(result); // 파이썬 스크립트의 출력을 클라이언트에 전송
-  });
+    py_cluster_model.stderr.on("data", (data) => {
+      console.error(`stderr: ${data}`); // 에러 로그 출력
+    });
+
+    py_cluster_model.on("close", (code) => {
+      console.log(`Python script exited with code ${code}`);
+      console.log(result);
+      console.log(req.file.path);
+      res.status(200).send(result); // 파이썬 스크립트의 출력을 클라이언트에 전송
+    });
+  } else {
+    // 업로드를 위해 파일이 JSON인 경우 처리 (임시)
+    const file_content = fs.readFileSync(filePath);
+    console.log(file_content);
+    res.status(200).send(file_content);
+  }
 });
 
 app.listen(PORT, () => {

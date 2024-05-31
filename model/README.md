@@ -84,6 +84,10 @@ JSON 데이터, 클러스터링 알고리즘 별 출력 데이터가 아래와 �
 
         'similar_sequence_matrix' :
             similar_sequence_matrix[i][j]는 악성코드 i와 j의 유사한 시퀀스 목록
+
+        'option' :
+            분석에 사용된 옵션들
+            similarity_method, similarity_option, clustering_method, clustering_option 이 있음
     }
 hierarchical:
     {
