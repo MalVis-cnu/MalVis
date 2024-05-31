@@ -81,6 +81,12 @@ def main(args):
     clustering_result['hash'] = hash
     clustering_result['sequence_data'] = input_data
     clustering_result['similar_sequence_matrix'] = similar_sequence_matrix
+    clustering_result['option'] = json.dumps({
+        'similarity_method' : args.similarity_method,
+        'similarity_option' : args.similarity_option,
+        'clustering_method' : args.clustering_method,
+        'clustering_option' : args.clustering_option
+    })
 
     
     # for i in clustering_result.items(): print(i)
