@@ -1,46 +1,136 @@
 import "./Aside.css";
-import Button from "../UI/Button";
-import UploadFile from "../UI/UploadFile";
-import InputModal from "../UI/InputModal";
-import { useState } from "react";
-import { createPost } from "../../api";
 
-const Aside = ({ onSendResult }) => {
-  const [modal, setModal] = useState(false);
-  const [inputData, setInputData] = useState({});
-  const [isUploaded, setIsUploaded] = useState(false);
-
-  const handleModal = (value) => {
-    setModal(value);
-  };
-
-  const sendInputData = (inputData) => {
-    setInputData(inputData);
-  };
-
-  const uploadData = (data) => {
-    setInputData({ ...inputData, seq_data: data });
-    setIsUploaded(true);
-  };
-
-  const handleSubmit = async () => {
-    if (!isUploaded) {
-      return alert("분석할 데이터 파일을 업로드해주세요.");
-    }
-    const response = await createPost({ seq_data: inputData.seq_data });
-    console.log(response);
-    onSendResult(response);
-  };
-
+const Aside = ({ nodes, results, clusters, clicked, widthStyle }) => {
   return (
     <>
-      {modal ? <InputModal onShow={handleModal} onSend={sendInputData} /> : ""}
-      <aside className="side-bar">
-        <UploadFile onUpload={uploadData} />
-        <Button onClick={() => handleModal(true)}>설정</Button>
-        <Button onClick={handleSubmit} className="start">
-          분석 시작
-        </Button>
+      <aside className="side-bar" style={widthStyle ? widthStyle : {}}>
+        {results ? (
+          <>
+            <div style={{ paddingLeft: "8px", height: "5%" }}>
+              {"전체 실루엣 계수 : " + results.data.silhouette_score}
+            </div>
+            <div style={{ padding: "0 8px 8px 8px" }}>
+              {console.log(results)}
+              <div>{"<<< 분석 옵션 >>>"}</div>
+              <div>
+                {"Similarity : " + results.data.option.similarity_method}
+              </div>
+              <div>
+                {"n-gram : " + results.data.option.similarity_option.ngram}
+              </div>
+              <div>
+                {"Clustering Algorithm : " +
+                  results.data.option.clustering_method}
+              </div>
+              <div>
+                {"링크 방식 : " + results.data.option.clustering_option.linkage}
+              </div>
+              <div>
+                {"클러스터 개수 : " +
+                  results.data.option.clustering_option.n_cluster}
+              </div>
+            </div>
+          </>
+        ) : null}
+        {clusters && clicked === "edge" ? (
+          <div
+            style={{ paddingLeft: "8px", height: "62%", overflow: "scroll" }}
+          >
+            <div>{"두 클러스터 간 거리 : " + clusters[2].data.value}</div>
+            <div>
+              <h3>Right Cluster</h3>
+              {clusters[0].map((c, i) => (
+                <div key={i}>{c.length >= 7 ? c.slice(0, 7) + "..." : c}</div>
+              ))}
+            </div>
+            <div>
+              <h3>Left Cluster</h3>
+              {clusters[1].map((c, i) => (
+                <div key={i}>{c.length >= 7 ? c.slice(0, 7) + "..." : c}</div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+        {nodes.length === 1 && clicked === "node" ? (
+          <div style={{ overflow: "scroll", height: "62%" }}>
+            <div className="compare-box">
+              <div className="compare-item-seq">
+                <div>시퀀스</div>
+                {results.data.sequence_data[nodes[0].idx].map((d, i) => (
+                  <div className="border-line">{"t_" + i}</div>
+                ))}
+              </div>
+              <div className="compare-item-one">
+                <div>
+                  {nodes[0].name.length >= 7
+                    ? nodes[0].name.slice(0, 7) + "..."
+                    : nodes[0].name}
+                </div>
+                {results.data.sequence_data[nodes[0].idx].map((api_idx, i) => (
+                  <div key={i} className="border-line">
+                    {api_idx}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
+        {nodes.length === 2 && clicked === "node" ? (
+          <div style={{ overflow: "scroll", height: "62%" }}>
+            <div className="compare-box">
+              <div className="" style={{ width: "100%" }}>
+                <div>시퀀스</div>
+                {results.data.sequence_data[nodes[0].idx].map((d, i) => (
+                  <div className="border-line">{"t_" + i}</div>
+                ))}
+              </div>
+              <div className="">
+                <div>
+                  {nodes[0].name.length >= 7
+                    ? nodes[0].name.slice(0, 7) + "..."
+                    : nodes[0].name}
+                </div>
+                {results.data.sequence_data[nodes[0].idx].map((api_idx, i) => (
+                  <div key={i} className="border-line">
+                    {api_idx}
+                  </div>
+                ))}
+              </div>
+              <div className="">
+                <div>
+                  {nodes[1].name.length >= 7
+                    ? nodes[1].name.slice(0, 7) + "..."
+                    : nodes[1].name}
+                </div>
+                {results.data.sequence_data[nodes[1].idx].map((api_idx, i) => (
+                  <div key={i} className="border-line">
+                    {api_idx}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>{`두 악성코드 간 유사도: ${
+              1 - results.data.distance_matrix[nodes[0].idx][nodes[1].idx]
+            }`}</div>
+            <div
+              className="similar-seq-box"
+              style={{ overflow: "scroll", height: "30%" }}
+            >
+              <div>유사 시퀀스 목록</div>
+              {results.data.similar_sequence_matrix[nodes[0].idx][
+                nodes[1].idx
+              ].map((sim_seq, i) => (
+                <div key={i} className="border-line">
+                  {sim_seq.replace(",", " ->")}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
       </aside>
     </>
   );

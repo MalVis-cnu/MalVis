@@ -6,8 +6,9 @@
   font-size: 1em;
   text-align: center;
   padding: 12px 0 12px 0;
-  margin: 20px 30px 0 30px;
+  margin: 20px 0 0 0;
   cursor: pointer;
+  width: 100%;
 }
 
 .file-name {

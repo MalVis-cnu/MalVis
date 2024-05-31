@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import "./InputModal.css";
 
 const InputModal = ({ onShow, onSend }) => {
+  const [similarity, setSimilarity] = useState("jaccard");
   const [algorithm, setAlgorithm] = useState("hierarchical");
 
   const [hierarchicalValues, setHierarchicalValues] = useState({
@@ -13,7 +14,17 @@ const InputModal = ({ onShow, onSend }) => {
     cluster: "2",
   });
 
+  const [kmeansValues, setKmeansValues] = useState({
+    algorithm: "kmeans",
+    maxIter: 100,
+    k: 2,
+  });
+
   const { n_gram, link, cluster } = hierarchicalValues;
+
+  const handleSelectedSimilarity = (event) => {
+    setSimilarity(event.target.value);
+  };
 
   const handleSelectedAlgorithm = (event) => {
     setAlgorithm(event.target.value);
@@ -47,6 +58,47 @@ const InputModal = ({ onShow, onSend }) => {
     <dialog className="input-modal" open>
       <form method="dialog" className="format">
         <div>
+          <label htmlFor="similarity" className="name">
+            Similarity Algorithm
+          </label>
+          <div id="similarity">
+            <div className="jaccard-opt">
+              <input
+                type="radio"
+                id="jaccard"
+                name="similarity"
+                value="jaccard"
+                defaultChecked={true}
+                onChange={handleSelectedSimilarity}
+              />
+              <label htmlFor="jaccard">Jaccard</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="cosine"
+                name="similarity"
+                value="cosine"
+                onChange={handleSelectedSimilarity}
+              />
+              <label htmlFor="cosine">Cosine</label>
+            </div>
+          </div>
+          <div className="item-of-hier">
+            <label htmlFor="n_gram" className="name">
+              n-gram
+            </label>
+            <input
+              id="n_gram"
+              type="number"
+              min="2"
+              value={n_gram}
+              className="input-number"
+              onChange={handleHierarchicalInput}
+            />
+          </div>
+        </div>
+        <div>
           <label htmlFor="algorithms" className="name">
             Clustering Algorithm
           </label>
@@ -77,19 +129,6 @@ const InputModal = ({ onShow, onSend }) => {
         {algorithm === "hierarchical" ? (
           <div>
             <div className="item-of-hier">
-              <label htmlFor="n_gram" className="name">
-                n-gram
-              </label>
-              <input
-                id="n_gram"
-                type="number"
-                min="2"
-                value={n_gram}
-                className="input-number"
-                onChange={handleHierarchicalInput}
-              />
-            </div>
-            <div className="item-of-hier">
               <label htmlFor="link" className="name">
                 링크 방식
               </label>
@@ -114,13 +153,25 @@ const InputModal = ({ onShow, onSend }) => {
           </div>
         ) : null}
         {algorithm === "K-means" ? (
-          <div>
-            <label htmlFor="k" className="name">
-              K 값(cluster 수) 설정
-            </label>
-            <br />
-            <input type="number" id="k" min="1" className="input-number" />
-          </div>
+          <>
+            <div>
+              <label htmlFor="iteration" className="name">
+                max iteration
+              </label>
+              <input
+                type="number"
+                id="iteration"
+                min="1"
+                className="input-number"
+              />
+            </div>
+            <div>
+              <label htmlFor="k" className="name">
+                K 값(cluster 수)
+              </label>
+              <input type="number" id="k" min="1" className="input-number" />
+            </div>
+          </>
         ) : null}
         <br />
         <footer className="footer">
