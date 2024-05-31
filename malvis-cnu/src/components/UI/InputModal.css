@@ -8,7 +8,8 @@
   background: white;
 }
 
-#algorithms {
+#algorithms,
+#similarity {
   display: flex;
   margin: 4px 0 12px 0;
 }
@@ -23,12 +24,13 @@
   margin-right: 8px;
 }
 
-.hier-opt {
+.hier-opt,
+.jaccard-opt {
   margin: 0 12px 0 0;
 }
 
 .item-of-hier {
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .footer {

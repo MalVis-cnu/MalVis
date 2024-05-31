@@ -3,7 +3,7 @@ import { useEffect, useRef, memo } from "react";
 
 import "./Main.css";
 
-const Main = memo(({ data, onSendDetail }) => {
+const Main = memo(({ data, onSendDetail, onSendClusters }) => {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -53,6 +53,37 @@ const Main = memo(({ data, onSendDetail }) => {
         node.y += node.data.value * 60;
       });
 
+      function getEdgeInfo(parent) {
+        const left = parent.children[0];
+        const right = parent.children[1];
+
+        const left_cluster = [];
+        const right_cluster = [];
+
+        let stack = [left.data];
+        while (stack.length !== 0) {
+          const current = stack.pop();
+          if (current.type === "leaf") {
+            left_cluster.push(current.name);
+          } else {
+            stack.push(current.children[0]);
+            stack.push(current.children[1]);
+          }
+        }
+        stack = [right.data];
+        while (stack.length !== 0) {
+          const current = stack.pop();
+          if (current.type === "leaf") {
+            right_cluster.push(current.name);
+          } else {
+            stack.push(current.children[0]);
+            stack.push(current.children[1]);
+          }
+        }
+
+        return [left_cluster, right_cluster, parent];
+      }
+
       // edge 그리기
       const edges = documentElement
         .selectAll("path")
@@ -85,8 +116,9 @@ const Main = memo(({ data, onSendDetail }) => {
           // 마우스를 치웠을 때 이벤트
           d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#5b9dff");
         })
-        .on("click", function () {
+        .on("click", function (event, info) {
           // 클릭 시 이벤트
+          d3.selectAll("text").attr("stroke", "black"); // 기존 노드 클릭 정보 제거
           documentElement.selectAll(".distance").remove(); // 기존 엣지 정보 표시 제거
           if (prevClass !== "") {
             // 클릭됐었던 엣지에 mouseout 이벤트 복구
@@ -98,6 +130,7 @@ const Main = memo(({ data, onSendDetail }) => {
           d3.selectAll(`.${this.classList[0]}`).on("mouseout", null); // mouseout 이벤트 제거
           d3.selectAll("path").attr("stroke", "#5b9dff");
           d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#e1b12c");
+          onSendClusters(getEdgeInfo(info.parent));
         });
 
       // node 그리기
@@ -126,7 +159,9 @@ const Main = memo(({ data, onSendDetail }) => {
         .attr("stroke", "black")
         .attr("stroke-width", 1)
         .text((d) => {
-          return d.data.name.slice(0, 7);
+          return d.data.name.length >= 7
+            ? d.data.name.slice(0, 7) + "..."
+            : d.data.name;
         })
         .on("mouseover", function () {
           d3.select(this).style("cursor", "pointer");
@@ -135,6 +170,7 @@ const Main = memo(({ data, onSendDetail }) => {
           d3.select(this).style("cursor", null);
         })
         .on("click", function (event, info) {
+          d3.selectAll("path").attr("stroke", "#5b9dff");
           const clicked = d3.selectAll("text").filter(function () {
             return d3.select(this).attr("stroke") === "red";
           })._groups[0].length;
@@ -148,7 +184,7 @@ const Main = memo(({ data, onSendDetail }) => {
           onSendDetail({ idx, name });
         });
     }
-  }, [data, ref, onSendDetail]);
+  }, [data, ref, onSendDetail, onSendClusters]);
 
   return <div className="main" ref={ref}></div>;
 });

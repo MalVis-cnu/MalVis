@@ -2,11 +2,33 @@
   background: #efefef;
   display: flex;
   flex-direction: column;
-  width: 20%;
+  width: 30%;
   height: 100%;
   padding: 20px 0 0 0;
 }
 
 .side-bar > input {
   margin: 0 0 12px 10%;
+}
+
+.compare-box {
+  display: flex;
+  padding: 0 12px 0 12px;
+  text-align: center;
+}
+
+.compare-item {
+  width: 33%;
+}
+
+.border-line {
+  /* border-top: 1px solid black;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black; */
+  border: 1px solid black;
+}
+
+.similar-seq-box {
+  padding: 0 12px 0 12px;
+  text-align: center;
 }
