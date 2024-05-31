@@ -21,6 +21,7 @@ const Layout = () => {
 
   const [isOpen, setOpen] = useState(true);
   const [clicked, setClicked] = useState("");
+  const [widthStyle, setWidthStyle] = useState(null);
   // const [xPosition, setX] = useState(-width);
 
   const side = useRef();
@@ -92,9 +93,13 @@ const Layout = () => {
     }
   };
 
+  const handleWidthStyle = () => {
+    setWidthStyle({ width: "" });
+  };
+
   const downloadJsonFile = () => {
     let element = document.createElement("a");
-    let text = JSON.stringify(result);
+    let text = JSON.stringify(result.data);
     element.setAttribute(
       "href",
       "data:text/json;charset=utf-8," + encodeURIComponent(text)
@@ -117,10 +122,12 @@ const Layout = () => {
     <div className="layout">
       <Aside
         className="aside"
+        widthStyle={widthStyle}
         nodes={nodes}
         results={result}
         clusters={clusters}
         clicked={clicked}
+        onClick={handleWidthStyle}
       />
       <Main
         data={dataForHierarchy}

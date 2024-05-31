@@ -1,33 +1,33 @@
 import "./Aside.css";
 
-const Aside = ({ nodes, results, clusters, clicked }) => {
+const Aside = ({ nodes, results, clusters, clicked, widthStyle }) => {
   return (
     <>
-      <aside className="side-bar">
+      <aside className="side-bar" style={widthStyle ? widthStyle : {}}>
         {results ? (
           <>
             <div style={{ paddingLeft: "8px", height: "5%" }}>
               {"전체 실루엣 계수 : " + results.data.silhouette_score}
             </div>
             <div style={{ padding: "0 8px 8px 8px" }}>
-              <div>{"<<< 분석 옵션 >>>"}</div>
               {console.log(results)}
+              <div>{"<<< 분석 옵션 >>>"}</div>
               <div>
-                {"Similarity :" + results.data.option.similarity_method}
+                {"Similarity : " + results.data.option.similarity_method}
               </div>
               <div>
-                {"n-gram :" + results.data.option.similarity_option.n_gram}
+                {"n-gram : " + results.data.option.similarity_option.ngram}
               </div>
               <div>
-                {"Clustering Algorithm :" +
+                {"Clustering Algorithm : " +
                   results.data.option.clustering_method}
               </div>
               <div>
-                {"링크 방식 :" + results.data.option.clustring_option.linkage}
+                {"링크 방식 : " + results.data.option.clustering_option.linkage}
               </div>
               <div>
-                {"클러스터 개수 :" +
-                  results.data.option.clustring_option.n_cluster}
+                {"클러스터 개수 : " +
+                  results.data.option.clustering_option.n_cluster}
               </div>
             </div>
           </>
@@ -54,13 +54,13 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
         {nodes.length === 1 && clicked === "node" ? (
           <div style={{ overflow: "scroll", height: "62%" }}>
             <div className="compare-box">
-              <div className="compare-item">
+              <div className="compare-item-seq">
                 <div>시퀀스</div>
                 {results.data.sequence_data[nodes[0].idx].map((d, i) => (
                   <div className="border-line">{"t_" + i}</div>
                 ))}
               </div>
-              <div className="compare-item">
+              <div className="compare-item-one">
                 <div>
                   {nodes[0].name.length >= 7
                     ? nodes[0].name.slice(0, 7) + "..."
@@ -80,13 +80,13 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
         {nodes.length === 2 && clicked === "node" ? (
           <div style={{ overflow: "scroll", height: "62%" }}>
             <div className="compare-box">
-              <div className="compare-item">
+              <div className="" style={{ width: "100%" }}>
                 <div>시퀀스</div>
                 {results.data.sequence_data[nodes[0].idx].map((d, i) => (
                   <div className="border-line">{"t_" + i}</div>
                 ))}
               </div>
-              <div className="compare-item" style={{ height: "30%" }}>
+              <div className="">
                 <div>
                   {nodes[0].name.length >= 7
                     ? nodes[0].name.slice(0, 7) + "..."
@@ -98,7 +98,7 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
                   </div>
                 ))}
               </div>
-              <div className="compare-item" style={{ height: "30%" }}>
+              <div className="">
                 <div>
                   {nodes[1].name.length >= 7
                     ? nodes[1].name.slice(0, 7) + "..."

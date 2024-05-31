@@ -2,7 +2,6 @@
   background: #efefef;
   display: flex;
   flex-direction: column;
-  width: 30%;
   height: 100%;
   padding: 20px 0 0 0;
 }
@@ -17,8 +16,16 @@
   text-align: center;
 }
 
-.compare-item {
-  width: 33%;
+.compare-item-seq {
+  width: 20%;
+}
+
+.compare-item-one {
+  width: 80%;
+}
+
+.compare-item-two {
+  width: 40%;
 }
 
 .border-line {
@@ -26,6 +33,7 @@
   border-right: 1px solid black;
   border-bottom: 1px solid black; */
   border: 1px solid black;
+  padding: 0 12px 0 12px;
 }
 
 .similar-seq-box {
