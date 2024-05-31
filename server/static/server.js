@@ -16,7 +16,8 @@ const storage = multer.diskStorage({
     cb(null, "./public/uploads/"); // 파일이 저장될 경로
   },
   filename: function (req, file, cb) {
-    cb(null, "example" + path.extname(file.originalname)); // 파일 이름 설정
+    // 파일 이름 설정: example + (원 파일 확장자)
+    cb(null, "example" + path.extname(file.originalname));
   },
 });
 
