@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Aside from "../components/aside/Aside";
 import Main from "../components/main/Main";
 
@@ -7,16 +7,34 @@ import "./Layout.css";
 const Layout = () => {
   const [result, setResult] = useState({});
   const [dataForHierarchy, setDataForHierarchy] = useState(null);
+  const [nodes, setNodes] = useState([]);
 
   const handleResult = (result) => {
     setResult(result);
     setDataForHierarchy(processResult(result.data));
   };
 
+  const sendDetail = useCallback((node) => {
+    setNodes((nodes) => {
+      if (nodes.length < 2) {
+        const newNodes = nodes.filter(({ idx }) => idx !== node.idx);
+        newNodes.push(node);
+        return newNodes;
+      } else {
+        return [node];
+      }
+    });
+  }, []);
+
   return (
     <div className="layout">
-      <Aside className="aside" onSendResult={handleResult} />
-      <Main data={dataForHierarchy} />
+      <Aside
+        className="aside"
+        onSendResult={handleResult}
+        nodes={nodes}
+        results={result}
+      />
+      <Main data={dataForHierarchy} onSendDetail={sendDetail} />
     </div>
   );
 };
@@ -37,15 +55,15 @@ function processResult(result) {
     if (a < l && b < l) {
       const struct_a = {
         type: "leaf",
-        // name: result.hash[reverse_labels[a]],
-        name: "",
+        i: reverse_labels[a],
+        name: result.hash[reverse_labels[a]],
         value: 0,
         children: [],
       };
       const struct_b = {
         type: "leaf",
-        // name: result.hash[reverse_labels[b]],
-        name: "",
+        i: reverse_labels[b],
+        name: result.hash[reverse_labels[b]],
         value: 0,
         children: [],
       };
@@ -59,8 +77,8 @@ function processResult(result) {
     } else if (a < l && b >= l) {
       const struct_a = {
         type: "leaf",
-        // name: result.hash[reverse_labels[a]],
-        name: "",
+        i: reverse_labels[a],
+        name: result.hash[reverse_labels[a]],
         value: 0,
         children: [],
       };
