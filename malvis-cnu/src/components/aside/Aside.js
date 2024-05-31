@@ -11,11 +11,24 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
             </div>
             <div style={{ padding: "0 8px 8px 8px" }}>
               <div>{"<<< 분석 옵션 >>>"}</div>
-              <div>Similarity : Jaccard</div>
-              <div>n-gram : 2</div>
-              <div>Clustering Algorithm : Hierarchical Clustering</div>
-              <div>링크 방식 : Single</div>
-              <div>클러스터 개수 : 2</div>
+              {console.log(results)}
+              <div>
+                {"Similarity :" + results.data.option.similarity_method}
+              </div>
+              <div>
+                {"n-gram :" + results.data.option.similarity_option.n_gram}
+              </div>
+              <div>
+                {"Clustering Algorithm :" +
+                  results.data.option.clustering_method}
+              </div>
+              <div>
+                {"링크 방식 :" + results.data.option.clustring_option.linkage}
+              </div>
+              <div>
+                {"클러스터 개수 :" +
+                  results.data.option.clustring_option.n_cluster}
+              </div>
             </div>
           </>
         ) : null}
