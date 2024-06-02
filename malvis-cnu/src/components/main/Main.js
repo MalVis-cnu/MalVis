@@ -7,10 +7,10 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
   const ref = useRef(null);
 
   useEffect(() => {
-    // const width = ref.current.clientWidth;
-    // const height = ref.current.clientHeight;
-    const width = 1000;
-    const height = 800;
+    const width = ref.current.clientWidth;
+    const height = ref.current.clientHeight;
+    // const width = 1000;
+    // const height = 800;
 
     let prevClass = ""; // edge - mouseout 이벤트 복구용 변수
 

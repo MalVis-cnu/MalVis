@@ -1,0 +1,18 @@
+.right-sidebar-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  z-index: 10;
+}
+
+.right-sidebar {
+  background: #efefef;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 20px 40px 0 40px;
+  transition: 1s ease;
+}
