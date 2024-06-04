@@ -2,11 +2,41 @@
   background: #efefef;
   display: flex;
   flex-direction: column;
-  width: 20%;
-  height: 100vh;
+  height: 100%;
   padding: 20px 0 0 0;
 }
 
 .side-bar > input {
   margin: 0 0 12px 10%;
+}
+
+.compare-box {
+  display: flex;
+  padding: 0 12px 0 12px;
+  text-align: center;
+}
+
+.compare-item-seq {
+  width: 20%;
+}
+
+.compare-item-one {
+  width: 80%;
+}
+
+.compare-item-two {
+  width: 40%;
+}
+
+.border-line {
+  /* border-top: 1px solid black;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black; */
+  border: 1px solid black;
+  padding: 0 12px 0 12px;
+}
+
+.similar-seq-box {
+  padding: 0 12px 0 12px;
+  text-align: center;
 }

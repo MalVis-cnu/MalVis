@@ -5,8 +5,9 @@
   color: white;
   font-size: 1em;
   padding: 12px 0 12px 0;
-  margin: 12px 30px 0 30px;
+  margin: 12px 0 0 0;
   cursor: pointer;
+  width: 100%;
 }
 
 .cancel {
@@ -28,6 +29,19 @@
   color: white;
   font-size: 1em;
   padding: 12px 0 12px 0;
-  margin: 12px 30px 0 30px;
+  margin: 12px 0 0 0;
   cursor: pointer;
+  width: 100%;
+}
+
+.processing {
+  background: #282c37;
+  opacity: 0.5;
+  border: none;
+  border-radius: 15px;
+  color: white;
+  font-size: 1em;
+  padding: 12px 0 12px 0;
+  margin: 12px 0 0 0;
+  width: 100%;
 }

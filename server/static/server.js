@@ -10,6 +10,11 @@ const path = require("path");
 const publicPath = path.join(__dirname, "public");
 app.use(express.static(publicPath));
 
+// cors 에러 해결을 위한 코드 추가
+app.use(express.json());
+var cors = require("cors");
+app.use(cors());
+
 // 업로드 폴더 존재 여부 검증
 const seqUploadsPath = publicPath + "/uploads/sequence-data";
 const procUploadsPath = publicPath + "/uploads/processed-data";
@@ -81,16 +86,18 @@ app.post("/cluster/:cluster-alg", seqUpload.single("seq_data"), (req, res) => {
     modelScriptPath,
     "-i",
     filePath,
-    "--simmilarity-method",
+    "--similarity-method",
     "jaccard",
-    "--simmilarity-option",
+    "--similarity-option",
     "ngram",
     "2",
     "--clustering-method",
     "hierarchical",
     "--clustering-option",
-    "k",
-    "3",
+    "n_cluster",
+    "2",
+    "linkage",
+    "single",
   ];
 
   let is_csv = req.file.filename.endsWith(".csv");
