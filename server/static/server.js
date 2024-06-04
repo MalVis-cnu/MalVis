@@ -71,6 +71,53 @@ app.get("/", (req, res) => {
   res.send({ message: "hello world!" });
 });
 
+/**
+ *
+ * @param {*} req 클라이언트의 요청 객체로, 클러스터링 알고리즘 및 유사성 방법에 대한 정보 포함
+ * @param {*} model_path 모델 파일 경로
+ * @param {*} fpath 업로드한 sequence data의 경로
+ * @returns {array} clustering 수행을 위한 명령어 정보 return
+ */
+const getModelInfo = (req, model_path, fpath) => {
+  /* similarity  option 변수 */
+  const cluster_alg = req.params.clusterAlg; // API 경로의 알고리즘 가져옴
+  const similarity_method = req.body.similarity;
+  const num_of_ngram = req.body.n_gram;
+  /* --------------------- */
+  args = [
+    model_path,
+    "-i",
+    fpath,
+    "--similarity-method",
+    similarity_method,
+    "--similarity-option",
+    "ngram",
+    num_of_ngram,
+    "--clustering-method",
+    cluster_alg,
+  ];
+
+  if (cluster_alg === "hierarchical") {
+    const n_cluster = req.body.cluster;
+    const linkage_type = req.body.link;
+
+    args.push(
+      "--clustering-option",
+      "n_cluster",
+      n_cluster,
+      "linkage",
+      linkage_type
+    );
+  } else if (cluster_alg === "kmeans") {
+    const k = req.body.k;
+    const max_iter = req.body.max_iter;
+
+    args.push("--clustering-option", "k", k, "max_iteration", max_iter);
+  }
+
+  return args;
+};
+
 /** 웹에서 전송된 sequence data로부터 python 클러스터링 모델에 입력 후 결과 반환
  * @param seq_data: 업로드한 txt, csv 파일
  * @var result: 반환된 json 그대로 클라이언트에 전달
@@ -84,31 +131,8 @@ app.post("/cluster/:clusterAlg", seqUpload.single("seq_data"), (req, res) => {
   const filePath = path.join(__dirname, req.file.path);
 
   console.log(req.body);
-  /* clustering option 변수 */
-  const similarity_method = req.body.similarity;
-  const num_of_ngram = req.body.n_gram;
-  const cluster_alg = req.params.clusterAlg; // API 경로의 알고리즘 가져옴
-  const n_cluster = req.body.cluster;
-  const linkage_type = req.body.link;
-  /* --------------------- */
 
-  const args = [
-    modelScriptPath,
-    "-i",
-    filePath,
-    "--similarity-method",
-    similarity_method,
-    "--similarity-option",
-    "ngram",
-    num_of_ngram,
-    "--clustering-method",
-    cluster_alg,
-    "--clustering-option",
-    "n_cluster",
-    n_cluster,
-    "linkage",
-    linkage_type,
-  ];
+  const args = getModelInfo(req, modelScriptPath, filePath);
 
   let is_csv = req.file.filename.endsWith(".csv");
   let result = "";
@@ -130,6 +154,8 @@ app.post("/cluster/:clusterAlg", seqUpload.single("seq_data"), (req, res) => {
       console.log(req.file.path);
       res.status(200).send(result); // 파이썬 스크립트의 출력을 클라이언트에 전송
     });
+  } else {
+    res.status(400).send("파일 형식은 .csv만 가능합니다. ");
   }
 });
 
