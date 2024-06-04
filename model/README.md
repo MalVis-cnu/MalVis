@@ -167,3 +167,50 @@ k-means:
     클러스터 내 다른 악성코드와의 거리 평균이 가장 작은 악성코드로 중심점을 이동시키는 방식으로 구현
 
 ```
+
+# Exit Code
+
+```
+input
+    1: cannot parse input arguments
+    입력 argument를 파싱할 수 없는 경우
+
+    2: cannot open file
+    파일이 존재하지 않는 경우
+
+    3: not enough sequence data column
+    시퀀스 데이터의 열 개수가 3 이하인 경우(악성코드 이름, malware유무 포함)
+
+    4: data is not API sequence number
+    API 시퀀스 데이터에 정상 범위(0~306)가 아닌 값이 있는 경우
+
+    5: not enough sequence data
+    악성코드 시퀀스 데이터 개수가 2개 미만인 경우
+
+
+similarity
+    21: unvalid similarity method {similarity_method}, choose with {list(valid_similarity_methods.keys())}
+    argument에 올바르지 않은 similarity method가 입력된 경우
+
+    22: unvalid ngram option {option['ngram']}, choose within 2 ~ {min_length} integer
+    ngram 값이 정상 범위 2 ~ {시퀀스 최소 길이}사이 정수가 아닌 경우
+
+
+clustering
+    41: unvalid similarity method {clustering_method}, choose with {list(valid_clustering_methods.keys())}
+    argument에 올바르지 않은 clustering method가 입력된 경우
+
+    42: unvalid linkage option {option['linkage']}, choose with {list(valid_linkage_options)}
+    linkage에 single, complete, average 외의 값이 입력된 경우
+
+    43: unvalid n_cluster option {option['n_cluster']}, choose within 1 ~ {len(distance_matrix)} integer
+    n_cluster 값이 정상 범위 1 ~ {악성코드 개수}사이 정수가 아닌 경우
+
+    44: unvalid k option {option['k']}, choose within 2 ~ {len(distance_matrix)} integer
+    k 값이 정상 범위 2 ~ {악성코드 개수}사이 정수가 아닌 경우
+
+    45: unvalid max_iteration {option['max_iteration']}, choose within 1 ~ 100,000 integer
+    max_iteration 값이 정상 범위 1 ~ 100,000 사이 정수가 아닌 경우
+
+
+```

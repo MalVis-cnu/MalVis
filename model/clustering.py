@@ -1,4 +1,4 @@
-
+import error
 
 def _silhouette_score(clusters, distance_matrix):
     scores = []
@@ -60,6 +60,9 @@ def _get_hirachical_clusters(children, n_cluster):
 
 
 def do_clustering(distance_matrix, clustering_method, option):
+    if clustering_method not in valid_clustering_methods:
+        error.print_and_exit(41, f'unvalid similarity method {clustering_method}, choose with {list(valid_clustering_methods.keys())}')
+
     return valid_clustering_methods[clustering_method](distance_matrix, option)
 
 
@@ -68,13 +71,22 @@ def do_clustering(distance_matrix, clustering_method, option):
 def _hierarchical_clustering(distance_matrix, option):
     from sklearn.cluster import AgglomerativeClustering
     if 'linkage' in option:
+        if option['linkage'] not in valid_linkage_options:
+            error.print_and_exit(42, f'''unvalid linkage option {option['linkage']}, choose with {list(valid_linkage_options)}''')
         linkage = option['linkage']
     else:
         linkage = 'single'
+
     if 'n_cluster' in option:
-        n_cluster = int(option['n_cluster'])
+        try:
+            n_cluster = int(option['n_cluster'])
+            if n_cluster < 1 or n_cluster > len(distance_matrix):
+                raise Exception()
+        except:
+            error.print_and_exit(43, f'''unvalid n_cluster option {option['n_cluster']}, choose within 1 ~ {len(distance_matrix)} integer''')
     else:
         n_cluster = 1
+
 
     model = AgglomerativeClustering(metric='precomputed', distance_threshold=0, n_clusters=None, linkage=linkage).fit(distance_matrix)
     if n_cluster > 1:
@@ -128,12 +140,23 @@ def _hierarchical_clustering(distance_matrix, option):
 
 def _kmeans_clustering(distance_matrix, option):
     import random
-    if '' in option:
-        k = int(option['k'])
+    if 'k' in option:
+        try:
+            k = int(option['k'])
+            if k < 2 or k > len(distance_matrix):
+                raise Exception()
+        except:
+            error.print_and_exit(44, f'''unvalid k option {option['k']}, choose within 2 ~ {len(distance_matrix)} integer''')
     else:
         k = 2
+
     if 'max_iteration' in option:
-        max_iteration = int(option['max_iteration'])
+        try:
+            max_iteration = int(option['max_iteration'])
+            if max_iteration < 1 or max_iteration > 100_000:
+                raise Exception()
+        except:
+            error.print_and_exit(45, f'''unvalid max_iteration {option['max_iteration']}, choose within 1 ~ 100,000 integer''')
     else:
         max_iteration = int(100)
 
@@ -197,3 +220,4 @@ def _kmeans_clustering(distance_matrix, option):
 
 valid_clustering_methods = {'hierarchical': _hierarchical_clustering,
                             'kmeans': _kmeans_clustering}
+valid_linkage_options = {'single', 'complete', 'average'}
