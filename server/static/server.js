@@ -72,6 +72,7 @@ app.get("/", (req, res) => {
 });
 
 /**
+ * 유사성 옵션을 통해 모델 정보 return
  *
  * @param {*} req 클라이언트의 요청 객체로, 클러스터링 알고리즘 및 유사성 방법에 대한 정보 포함
  * @param {*} model_path 모델 파일 경로
@@ -155,10 +156,11 @@ app.post("/cluster/:clusterAlg", seqUpload.single("seq_data"), (req, res) => {
       res.status(200).send(result); // 파이썬 스크립트의 출력을 클라이언트에 전송
     });
   } else {
-    res.status(400).send("파일 형식은 .csv만 가능합니다. ");
+    res.status(400).send("파일 형식은 CSV만 가능합니다. ");
   }
 });
 
+// 이전에 유사도가 계산된 파일 업로드 시 클라이언트에 전송한다.
 app.post("/upload", procUpload.single("processed_data"), (req, res) => {
   const filePath = path.join(__dirname, req.file.path);
   // 업로드를 위해 파일이 JSON인 경우 처리
@@ -166,7 +168,10 @@ app.post("/upload", procUpload.single("processed_data"), (req, res) => {
   let is_json = req.file.filename.endsWith(".json");
 
   if (is_json) {
+    // 파일 확장자가 json이면 그대로 클라이언트에 전달
     res.status(200).send(file_content);
+  } else {
+    res.status(400).send("json 형식의 파일이 아닙니다. ");
   }
 });
 
