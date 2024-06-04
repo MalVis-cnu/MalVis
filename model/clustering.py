@@ -13,6 +13,7 @@ def _silhouette_score(clusters, distance_matrix):
 
         min_dist = 1
         min_idx = 0
+        k_nearest = 0
         for idx in range(len(distance_matrix)):
             if idx in clusters[k_me]:
                 continue
