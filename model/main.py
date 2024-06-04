@@ -1,5 +1,6 @@
 import argparse
 import json
+import time, datetime
 
 import similarity
 import clustering
@@ -94,15 +95,20 @@ def option_parsing(option):
 
 
 def main(args):
+    start_input_time = time.time()
     input_data, hash = input_data_parsing(args.input_data)
+    end_input_time = time.time()
 
     similarity_method = args.similarity_method
     clustering_method = args.clustering_method
-        
-    distance_matrix, similar_sequence_matrix = similarity.get_similarity(input_data=input_data, similarity_method=similarity_method, option=option_parsing(args.similarity_option))
     
-    clustering_result = clustering.do_clustering(distance_matrix=distance_matrix, clustering_method=clustering_method, option=option_parsing(args.clustering_option))
+    start_similarity_time = time.time()
+    distance_matrix, similar_sequence_matrix = similarity.get_similarity(input_data=input_data, similarity_method=similarity_method, option=option_parsing(args.similarity_option))
+    end_similarity_time = time.time()
 
+    start_clustering_time = time.time()
+    clustering_result = clustering.do_clustering(distance_matrix=distance_matrix, clustering_method=clustering_method, option=option_parsing(args.clustering_option))
+    end_clustering_time = time.time()
     
     clustering_result['distance_matrix'] = distance_matrix
     clustering_result['hash'] = hash
@@ -115,11 +121,19 @@ def main(args):
         'clustering_option' : option_parsing(args.clustering_option)
     }
 
+    total_time = str(datetime.timedelta(seconds=end_clustering_time-start_input_time))
+    input_time = str(datetime.timedelta(seconds=end_input_time-start_input_time))
+    similarity_time = str(datetime.timedelta(seconds=end_similarity_time-start_similarity_time))
+    clustering_time = str(datetime.timedelta(seconds=end_clustering_time-start_clustering_time))
+    clustering_result['time'] = {
+        'total_time': total_time,
+        'input_time': input_time,
+        'similarity_time': similarity_time,
+        'clustering_time': clustering_time
+    }
     
     # for i in clustering_result.items(): print(i)
     print(json.dumps(clustering_result))
-
-
 
 if __name__== '__main__':
     args = args_parsing()

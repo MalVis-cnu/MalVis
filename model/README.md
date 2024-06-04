@@ -90,6 +90,10 @@ JSON 데이터, 클러스터링 알고리즘 별 출력 데이터가 아래와 �
         'option' :
             분석에 사용된 옵션들
             similarity_method, similarity_option, clustering_method, clustering_option 이 있음
+
+        'time':
+            분석에 소요된 시간
+            total_time, input_time, similarity_time, clustering_time이 있음
     }
 hierarchical:
     {
