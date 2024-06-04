@@ -80,11 +80,9 @@ JSON 데이터, 클러스터링 알고리즘 별 출력 데이터가 아래와 �
         
         'hash' :
             hash[i]는 i번 악성코드의 해쉬값
-            이때 i는 최초 입력의 i와 같음 (labels와 관련이 없음)
         
         'sequence_data' :
             sequence_data[i]는 i번 악성코드의 시퀀스 데이터
-            이때 i는 최초 입력의 i와 같음 (labels와 관련이 없음)
 
         'similar_sequence_matrix' :
             similar_sequence_matrix[i][j]는 악성코드 i와 j의 유사한 시퀀스 목록
@@ -111,10 +109,6 @@ hierarchical:
 
         'distances' :
             children[i]에서 묶일 때 각 클러스터와의 거리
-
-        'labels' :
-            출력에서 사용되는 악성코드의 번호. 입력의 i번째 악성코드는 출력에서 labels[i] 로 사용됨
-            children과 clusters 에서 사용됨
             
         'clusters' :
             n_clusters개의 클러스터로 악성코드를 묶은 배열

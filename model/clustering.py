@@ -133,7 +133,6 @@ def _hierarchical_clustering(distance_matrix, option):
 
     return {'children'          : model.children_.tolist(),
             'distances'         : model.distances_.tolist(),
-            'labels'            : model.labels_.tolist(),
             'clusters'          : clusters,
             'silhouette_score'  : silhouette_score,
             }
