@@ -75,29 +75,39 @@ app.get("/", (req, res) => {
  * @param seq_data: 업로드한 txt, csv 파일
  * @var result: 반환된 json 그대로 클라이언트에 전달
  */
-app.post("/cluster/:cluster-alg", seqUpload.single("seq_data"), (req, res) => {
+app.post("/cluster/:clusterAlg", seqUpload.single("seq_data"), (req, res) => {
   // linux 환경이면 python3, Windows 환경이면 python 변경 필요
   const isWindows = process.platform === "win32"; // 운영체제 구분을 위한 boolean
   // Linux인 경우 python3, 윈도우인 경우 python 커맨드를 실행한다.
   const pythonCommand = isWindows ? "python" : "python3";
   const modelScriptPath = path.join(__dirname, "../../model/main.py");
   const filePath = path.join(__dirname, req.file.path);
+
+  console.log(req.body);
+  /* clustering option 변수 */
+  const similarity_method = req.body.similarity;
+  const num_of_ngram = req.body.n_gram;
+  const cluster_alg = req.params.clusterAlg; // API 경로의 알고리즘 가져옴
+  const n_cluster = req.body.cluster;
+  const linkage_type = req.body.link;
+  /* --------------------- */
+
   const args = [
     modelScriptPath,
     "-i",
     filePath,
     "--similarity-method",
-    "jaccard",
+    similarity_method,
     "--similarity-option",
     "ngram",
-    "2",
+    num_of_ngram,
     "--clustering-method",
-    "hierarchical",
+    cluster_alg,
     "--clustering-option",
     "n_cluster",
-    "2",
+    n_cluster,
     "linkage",
-    "single",
+    linkage_type,
   ];
 
   let is_csv = req.file.filename.endsWith(".csv");
@@ -111,6 +121,7 @@ app.post("/cluster/:cluster-alg", seqUpload.single("seq_data"), (req, res) => {
 
     py_cluster_model.stderr.on("data", (data) => {
       console.error(`stderr: ${data}`); // 에러 로그 출력
+      res.status(500).send("Internal Server Error");
     });
 
     py_cluster_model.on("close", (code) => {
