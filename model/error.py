@@ -1,6 +1,6 @@
 import traceback
 
-DEBUG = True
+DEBUG = False
 
 def print_and_exit(exitcode, string):
     if DEBUG:

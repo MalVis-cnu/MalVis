@@ -1,12 +1,14 @@
 # 사용법
 
 ```
-usage: main.py [-h] [-i INPUT_DATA] [--similarity-method SIMILARITY_METHOD] [--similarity-option [SIMILARITY_OPTION ...]]
-               [--clustering-method CLUSTERING_METHOD] [--clustering-option [CLUSTERING_OPTION ...]]
+usage: main.py [-h] -i INPUT_DATA [-d] [--similarity-method SIMILARITY_METHOD]
+               [--similarity-option [SIMILARITY_OPTION ...]] [--clustering-method CLUSTERING_METHOD]
+               [--clustering-option [CLUSTERING_OPTION ...]]
 
 options:
   -h, --help            show this help message and exit
   -i INPUT_DATA         input file path
+  -d                    debug flag
   --similarity-method SIMILARITY_METHOD
                         select similarity method ['jaccard', 'cosine']
   --similarity-option [SIMILARITY_OPTION ...]
@@ -26,6 +28,7 @@ options:
                         kmeans:
                         	k [int]
                         	max_iteration [int]
+
 
 ```
 사용 예시
@@ -53,6 +56,7 @@ python main.py ^
 입력 첫 줄은 각 열의 이름.<br>
 첫 번째 열은 악성코드의 hash, 마지막 열은 악성코드 여부.<br>
 최소 2개 이상의 악성코드가 입력으로 주어져야 함.<br>
+시퀀스 데이터들의 길이가 모두 같을 필요 없음.<br>
 
 입력 예시
 |hash|t0|t1|t2|...|t99|malware|
