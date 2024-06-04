@@ -4,47 +4,79 @@ import { createPortal } from "react-dom";
 import "./InputModal.css";
 
 const InputModal = ({ onShow, onSend }) => {
-  const [similarity, setSimilarity] = useState("jaccard");
+  const [similarityValues, setSimilarityValues] = useState({
+    similarity: "jaccard",
+    n_gram: "2",
+  });
   const [algorithm, setAlgorithm] = useState("hierarchical");
 
   const [hierarchicalValues, setHierarchicalValues] = useState({
     algorithm: "hierarchical",
-    n_gram: "2",
     link: "single",
     cluster: "2",
   });
 
   const [kmeansValues, setKmeansValues] = useState({
     algorithm: "kmeans",
-    maxIter: 100,
-    k: 2,
+    maxIter: "100",
+    k: "2",
   });
 
-  const { n_gram, link, cluster } = hierarchicalValues;
+  const { similarity, n_gram } = similarityValues;
+  const { link, cluster } = hierarchicalValues;
+  const { maxIter, k } = kmeansValues;
 
   const handleSelectedSimilarity = (event) => {
-    setSimilarity(event.target.value);
+    const { id, value } = event.target;
+
+    setSimilarityValues({
+      ...similarityValues,
+      [id]: value,
+    });
   };
 
   const handleSelectedAlgorithm = (event) => {
     setAlgorithm(event.target.value);
   };
 
-  const handleHierarchicalInput = (event) => {
+  const handleInput = (event) => {
     const { id, value } = event.target;
-    setHierarchicalValues({
-      ...hierarchicalValues,
-      [id]: value,
-    });
+
+    if (algorithm === "hierarchical") {
+      setHierarchicalValues({
+        ...hierarchicalValues,
+        [id]: value,
+      });
+    } else if (algorithm === "kmeans") {
+      setKmeansValues({
+        ...kmeansValues,
+        [id]: value,
+      });
+    }
+  };
+
+  const exceptionChecker = () => {
+    if (n_gram < 2) {
+      return alert("2 이상의 정수를 입력해주세요.");
+    }
   };
 
   const handleConfirm = (event) => {
     event.preventDefault();
     if (algorithm === "hierarchical") {
-      console.log(hierarchicalValues);
+      setHierarchicalValues({
+        ...hierarchicalValues,
+        similarity,
+        n_gram,
+      });
       onSend(hierarchicalValues);
     } else if (algorithm === "K-means") {
-      return {};
+      setKmeansValues({
+        ...kmeansValues,
+        similarity,
+        n_gram,
+      });
+      onSend(kmeansValues);
     }
     onShow(false);
   };
@@ -86,15 +118,17 @@ const InputModal = ({ onShow, onSend }) => {
           </div>
           <div className="item-of-hier">
             <label htmlFor="n_gram" className="name">
-              n-gram
+              n-gram(2 이상 정수)
             </label>
             <input
               id="n_gram"
+              name="n_gram"
               type="number"
               min="2"
               value={n_gram}
               className="input-number"
-              onChange={handleHierarchicalInput}
+              onChange={handleSelectedSimilarity}
+              onBlur={exceptionChecker}
             />
           </div>
         </div>
@@ -132,7 +166,7 @@ const InputModal = ({ onShow, onSend }) => {
               <label htmlFor="link" className="name">
                 링크 방식
               </label>
-              <select id="link" value={link} onChange={handleHierarchicalInput}>
+              <select id="link" name="link" value={link} onChange={handleInput}>
                 <option value="single">Single</option>
                 <option value="complete">complete</option>
                 <option value="average">Average</option>
@@ -140,14 +174,16 @@ const InputModal = ({ onShow, onSend }) => {
             </div>
             <div className="item-of-hier">
               <label htmlFor="cluster" className="name">
-                클러스터 개수
+                클러스터 개수(2 이상 정수)
               </label>
               <input
                 id="cluster"
+                name="cluster"
                 type="number"
                 value={cluster}
                 className="input-number"
-                onChange={handleHierarchicalInput}
+                onChange={handleInput}
+                onBlur={exceptionChecker}
               />
             </div>
           </div>
@@ -163,13 +199,22 @@ const InputModal = ({ onShow, onSend }) => {
                 id="iteration"
                 min="1"
                 className="input-number"
+                value={maxIter}
+                onChange={handleInput}
               />
             </div>
             <div>
               <label htmlFor="k" className="name">
                 K 값(cluster 수)
               </label>
-              <input type="number" id="k" min="1" className="input-number" />
+              <input
+                type="number"
+                id="k"
+                min="1"
+                className="input-number"
+                value={k}
+                onChange={handleInput}
+              />
             </div>
           </>
         ) : null}

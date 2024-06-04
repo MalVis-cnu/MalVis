@@ -1,0 +1,16 @@
+.load_btn {
+  background: #10ac84;
+  border: none;
+  border-radius: 15px;
+  color: white;
+  font-size: 1em;
+  text-align: center;
+  padding: 12px 0 12px 0;
+  margin: 12px 0 0 0;
+  cursor: pointer;
+  width: 100%;
+}
+
+#file {
+  display: none;
+}

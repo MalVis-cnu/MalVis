@@ -1,10 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import InputModal from "./InputModal";
-import { createPost } from "../../api";
+import {
+  requestHierarchicalClustring,
+  requestKmeansClustering,
+} from "../../api";
 import Button from "./Button";
 import UploadFile from "./UploadFile";
 
 import "./SideMenu.css";
+import LoadSavedResult from "./LoadSavedResult";
 
 const SideMenu = ({ result, onHandleResult }) => {
   const [modal, setModal] = useState(false);
@@ -42,16 +46,18 @@ const SideMenu = ({ result, onHandleResult }) => {
       return alert("분석할 데이터 파일을 업로드해주세요.");
     }
     setIsProcessing(true);
-    const response = await createPost({ seq_data: inputData.seq_data });
-    setIsProcessing(false);
-    setOpen(false);
-    onHandleResult(response);
-  };
 
-  const handleClose = (e) => {
-    let sideArea = side.current;
-    if (isOpen && !sideArea) {
+    if (inputData.algorithm === "hierarchical") {
+      // const response = await requestHierarchicalClustring(inputData);
+      const response = await requestHierarchicalClustring({ seq_data: data });
+      setIsProcessing(false);
       setOpen(false);
+      onHandleResult(response);
+    } else if (inputData.algorithm === "kmeans") {
+      const response = await requestKmeansClustering(inputData);
+      setIsProcessing(false);
+      setOpen(false);
+      onHandleResult(response);
     }
   };
 
@@ -72,13 +78,6 @@ const SideMenu = ({ result, onHandleResult }) => {
     element.click(); //클릭 이벤트 트리거 - 이 시점에 다운로드 발생
     document.body.removeChild(element); //하이퍼링크 제거
   };
-
-  useEffect(() => {
-    window.addEventListener("click", handleClose);
-    return () => {
-      window.removeEventListener("click", handleClose);
-    };
-  }, []);
 
   return (
     <div className="right-sidebar-container">
@@ -101,13 +100,16 @@ const SideMenu = ({ result, onHandleResult }) => {
           >
             {isProcessing ? "분석 중..." : "분석 시작"}
           </Button>
-          <Button
-            onClick={downloadJsonFile}
-            className={result ? "download" : "prevent-download"}
-            isDisabled={result ? false : true}
-          >
-            결과 다운로드
-          </Button>
+          <div className="additional-functions">
+            <Button
+              onClick={downloadJsonFile}
+              className={result ? "download" : "prevent-download"}
+              isDisabled={result ? false : true}
+            >
+              결과 다운로드
+            </Button>
+            <LoadSavedResult />
+          </div>
         </div>
       ) : null}
     </div>

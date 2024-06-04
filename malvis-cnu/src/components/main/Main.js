@@ -55,37 +55,6 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
         node.y += node.data.value * 60;
       });
 
-      function getEdgeInfo(parent) {
-        const left = parent.children[0];
-        const right = parent.children[1];
-
-        const left_cluster = [];
-        const right_cluster = [];
-
-        let stack = [left.data];
-        while (stack.length !== 0) {
-          const current = stack.pop();
-          if (current.type === "leaf") {
-            left_cluster.push(current.name);
-          } else {
-            stack.push(current.children[0]);
-            stack.push(current.children[1]);
-          }
-        }
-        stack = [right.data];
-        while (stack.length !== 0) {
-          const current = stack.pop();
-          if (current.type === "leaf") {
-            right_cluster.push(current.name);
-          } else {
-            stack.push(current.children[0]);
-            stack.push(current.children[1]);
-          }
-        }
-
-        return [left_cluster, right_cluster, parent];
-      }
-
       // edge 그리기
       const edges = documentElement
         .selectAll("path")
@@ -192,3 +161,34 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
 });
 
 export default Main;
+
+function getEdgeInfo(parent) {
+  const left = parent.children[0];
+  const right = parent.children[1];
+
+  const left_cluster = [];
+  const right_cluster = [];
+
+  let stack = [left.data];
+  while (stack.length !== 0) {
+    const current = stack.pop();
+    if (current.type === "leaf") {
+      left_cluster.push(current.name);
+    } else {
+      stack.push(current.children[0]);
+      stack.push(current.children[1]);
+    }
+  }
+  stack = [right.data];
+  while (stack.length !== 0) {
+    const current = stack.pop();
+    if (current.type === "leaf") {
+      right_cluster.push(current.name);
+    } else {
+      stack.push(current.children[0]);
+      stack.push(current.children[1]);
+    }
+  }
+
+  return [left_cluster, right_cluster, parent];
+}

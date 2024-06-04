@@ -12,7 +12,6 @@ const Layout = () => {
   const [clusters, setClusters] = useState(null);
 
   const [clicked, setClicked] = useState("");
-  // const [xPosition, setX] = useState(-width);
 
   const handleResult = (result) => {
     setResult(result);
@@ -60,11 +59,6 @@ function processResult(result) {
   let arr = new Array(result.children.length).fill(0);
   let l = result.hash.length;
 
-  const reverse_labels = new Array(result.labels.length).fill(-1);
-  for (let i in result.labels) {
-    reverse_labels[result.labels[i]] = i;
-  }
-
   for (let i in result.children) {
     const a = result.children[i][0];
     const b = result.children[i][1];
@@ -72,15 +66,15 @@ function processResult(result) {
     if (a < l && b < l) {
       const struct_a = {
         type: "leaf",
-        i: reverse_labels[a],
-        name: result.hash[reverse_labels[a]],
+        i: a,
+        name: result.hash[a],
         value: 0,
         children: [],
       };
       const struct_b = {
         type: "leaf",
-        i: reverse_labels[b],
-        name: result.hash[reverse_labels[b]],
+        i: b,
+        name: result.hash[b],
         value: 0,
         children: [],
       };
@@ -94,8 +88,8 @@ function processResult(result) {
     } else if (a < l && b >= l) {
       const struct_a = {
         type: "leaf",
-        i: reverse_labels[a],
-        name: result.hash[reverse_labels[a]],
+        i: a,
+        name: result.hash[a],
         value: 0,
         children: [],
       };
