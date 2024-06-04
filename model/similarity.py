@@ -1,3 +1,5 @@
+import error
+
 def _ngram(input_data, n):
     return [[str( tuple( i[j+k] for k in range(n) ) ) for j in range(1, len(i)-n)] for i in input_data]
 
@@ -5,12 +7,21 @@ def _ngram(input_data, n):
     
 
 def get_similarity(similarity_method, input_data, option):
+    if similarity_method not in valid_similarity_methods:
+        error.print_and_exit(21, f'unvalid similarity method {similarity_method}, choose with {list(valid_similarity_methods.keys())}')
+    
     return valid_similarity_methods[similarity_method](input_data, option)
 
 
 def _get_cosine(input_data, option):
     if 'ngram' in option:
-        ngram = int(option['ngram'])
+        min_length = min( [len(i) for i in input_data] )
+        try:
+            ngram = int(option['ngram'])
+            if ngram < 2 or ngram > min_length:
+                raise Exception()
+        except:
+            error.print_and_exit(22, f'''unvalid ngram option {option['ngram']}, choose within 2 ~ {min_length} integer''')
     else:
         ngram = 2
 
@@ -64,7 +75,13 @@ def _coinse_score(i1, i2):
 
 def _get_jaccard(input_data, option):
     if 'ngram' in option:
-        ngram = int(option['ngram'])
+        min_length = min( [len(i) for i in input_data] )
+        try:
+            ngram = int(option['ngram'])
+            if ngram < 2 or ngram > min_length:
+                raise Exception()
+        except:
+            error.print_and_exit(22, f'''unvalid ngram option {option['ngram']}, choose within 2 ~ {min_length} integer''')
     else:
         ngram = 2
 
