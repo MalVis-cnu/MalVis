@@ -19,6 +19,29 @@ app.use(cors());
 const seqUploadsPath = publicPath + "/uploads/sequence-data";
 const procUploadsPath = publicPath + "/uploads/processed-data";
 
+/* model이 반환하는 exit code 정의 */
+const EXIT_SUCCESS = 0; // 정상 종료
+
+// 입력 관련
+const ARGS_NOT_PARSABLE = 1; // 입력 argument를 파싱할 수 없는 경우
+const FILE_NOT_EXIST = 2; // 파일이 존재하지 않는 경우
+const NOT_ENOUGH_SEQ_COL = 3; // 시퀀스 데이터의 열 개수가 3 이하인 경우
+const INVALID_SEQ_DATA = 4; // API 시퀀스 데이터에 정상 범위가 아닌 값
+const NOT_ENOUGH_SEQ_RECORD = 5; // 악성코드 시퀀스 데이터 개수가 2개 미만인 경우
+
+// 유사도 관련
+const INVALID_SIMILARITY_METHOD = 21; // 올바르지 않은 similarity method가 입력된 경우
+const INVALID_NGRAM_OPTION = 22; // ngram 값이 정상 범위가 아닌 경우
+
+// 클러스터링 관련
+const INVALID_CLUSTERING_METHOD = 41; // 올바르지 않은 clustering method가 입력된 경우
+const INVALID_LINKAGE = 42; // linkage에 올바르지 않은 값이 입력된 경우
+const INVALID_N_CLUSTER = 43; // n_cluster 값이 정상 범위가 아닌 경우
+const INVALID_K = 44; // k 값이 정상 범위가 아닌 경우
+const INVALID_MAX_ITERATION = 45; // max_iteration 값이 정상 범위가 아닌 경우
+
+/*---------------------------------*/
+
 // 시퀀스 업로드 폴더가 존재하지 않을 경우 디렉토리 생성
 if (!fs.existsSync(seqUploadsPath)) {
   console.log(`${seqUploadsPath} 폴더가 존재하지 않습니다. 폴더를 생성합니다.`);
@@ -146,14 +169,71 @@ app.post("/cluster/:clusterAlg", seqUpload.single("seq_data"), (req, res) => {
 
     py_cluster_model.stderr.on("data", (data) => {
       console.error(`stderr: ${data}`); // 에러 로그 출력
-      res.status(500).send("Internal Server Error");
     });
 
     py_cluster_model.on("close", (code) => {
       console.log(`Python script exited with code ${code}`);
       console.log(result);
       console.log(req.file.path);
-      res.status(200).send(result); // 파이썬 스크립트의 출력을 클라이언트에 전송
+
+      switch (code) {
+        case EXIT_SUCCESS:
+          res.status(200).send(result); // 파이썬 스크립트의 출력을 클라이언트에 전송
+          return;
+        case ARGS_NOT_PARSABLE:
+          res.status(400).send("Cannot parse input arguments");
+          return;
+        case FILE_NOT_EXIST:
+          res.status(400).send("Cannot open file");
+          return;
+        case NOT_ENOUGH_SEQ_COL:
+          res.status(400).send(
+            "Not enough sequence data column \
+                (maybe not included malware's name and malware column)"
+          );
+          return;
+        case INVALID_SEQ_DATA:
+          res.status(400).send("Data is not API sequence numbers");
+          return;
+        case NOT_ENOUGH_SEQ_RECORD:
+          res
+            .status(400)
+            .send(
+              "The number of records of the data is not enough (at least 2)"
+            );
+          return;
+        case INVALID_SIMILARITY_METHOD:
+          res.status(400).send("Invalid similarity method");
+          return;
+        case INVALID_NGRAM_OPTION:
+          res.status(400).send("Invalid ngram option");
+          return;
+        case INVALID_CLUSTERING_METHOD:
+          res.status(400).send("Invalid clustering option");
+          return;
+        case INVALID_LINKAGE:
+          res
+            .status(400)
+            .send(
+              "Invalid linkage option. you have to select one of [single, linkage, average]"
+            );
+          return;
+        case INVALID_N_CLUSTER:
+          res.status(400).send(
+            "Invalid n_cluster option. \
+            the # of cluster must be positive integer"
+          );
+          return;
+        case INVALID_K:
+          res.status(400).send("Invalid K option. The k must be 2 or more");
+          return;
+        case INVALID_MAX_ITERATION:
+          res.status(400).send(
+            "Invalid max iteration option. \
+              The max iteration must be in within 1 ~ 100,000 integer"
+          );
+          return;
+      }
     });
   } else {
     res.status(400).send("파일 형식은 CSV만 가능합니다. ");
