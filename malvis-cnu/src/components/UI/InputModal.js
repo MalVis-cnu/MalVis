@@ -64,19 +64,13 @@ const InputModal = ({ onShow, onSend }) => {
   const handleConfirm = (event) => {
     event.preventDefault();
     if (algorithm === "hierarchical") {
-      setHierarchicalValues({
-        ...hierarchicalValues,
-        similarity,
-        n_gram,
-      });
-      onSend(hierarchicalValues);
-    } else if (algorithm === "K-means") {
-      setKmeansValues({
+      onSend({ ...hierarchicalValues, similarity, n_gram });
+    } else if (algorithm === "kmeans") {
+      onSend({
         ...kmeansValues,
         similarity,
         n_gram,
       });
-      onSend(kmeansValues);
     }
     onShow(false);
   };
@@ -128,7 +122,7 @@ const InputModal = ({ onShow, onSend }) => {
               value={n_gram}
               className="input-number"
               onChange={handleSelectedSimilarity}
-              onBlur={exceptionChecker}
+              // onBlur={exceptionChecker}
             />
           </div>
         </div>

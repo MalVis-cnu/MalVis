@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import InputModal from "./InputModal";
 import {
   requestHierarchicalClustring,
@@ -12,7 +12,13 @@ import LoadSavedResult from "./LoadSavedResult";
 
 const SideMenu = ({ result, onHandleResult }) => {
   const [modal, setModal] = useState(false);
-  const [inputData, setInputData] = useState({});
+  const [inputData, setInputData] = useState({
+    algorithm: "hierarchical",
+    similarity: "jaccard",
+    n_gram: "2",
+    link: "single",
+    cluster: "2",
+  });
   const [isUploaded, setIsUploaded] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isOpen, setOpen] = useState(true);
@@ -25,10 +31,10 @@ const SideMenu = ({ result, onHandleResult }) => {
 
   const sendInputData = (sendedInputData) => {
     if (sendedInputData.algorithm === "hierarchical") {
-      const { algorithm, n_gram, link, cluster } = sendedInputData;
+      const { similarity, n_gram, link, cluster } = sendedInputData;
       setInputData({
         ...inputData,
-        algorithm,
+        similarity,
         n_gram,
         link,
         cluster,
@@ -37,19 +43,21 @@ const SideMenu = ({ result, onHandleResult }) => {
   };
 
   const uploadData = (data) => {
+    console.log(inputData);
     setInputData({ ...inputData, seq_data: data });
     setIsUploaded(true);
   };
 
   const handleSubmit = async () => {
+    console.log(inputData);
     if (!isUploaded) {
       return alert("분석할 데이터 파일을 업로드해주세요.");
     }
     setIsProcessing(true);
 
     if (inputData.algorithm === "hierarchical") {
-      // const response = await requestHierarchicalClustring(inputData);
-      const response = await requestHierarchicalClustring({ seq_data: data });
+      const response = await requestHierarchicalClustring(inputData);
+      // const response = await requestHierarchicalClustring();
       setIsProcessing(false);
       setOpen(false);
       onHandleResult(response);
@@ -77,6 +85,10 @@ const SideMenu = ({ result, onHandleResult }) => {
     document.body.appendChild(element); //DOM body요소에 하이퍼링크 부착
     element.click(); //클릭 이벤트 트리거 - 이 시점에 다운로드 발생
     document.body.removeChild(element); //하이퍼링크 제거
+  };
+
+  const handleLoadedResult = (data) => {
+    onHandleResult(data);
   };
 
   return (
@@ -108,7 +120,7 @@ const SideMenu = ({ result, onHandleResult }) => {
             >
               결과 다운로드
             </Button>
-            <LoadSavedResult />
+            <LoadSavedResult resultHandler={handleLoadedResult} />
           </div>
         </div>
       ) : null}

@@ -51,8 +51,17 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
       });
       clusterLayout(root);
 
+      // leaf node의 y값 찾기
+      let yleaf = 0;
+      const ratio = 0.01;
       root.descendants().forEach((node) => {
-        node.y += node.data.value * 60;
+        if (node.data.type === "leaf") {
+          yleaf = node.y;
+        }
+      });
+
+      root.descendants().forEach((node) => {
+        node.y = yleaf - yleaf * node.data.value - yleaf * ratio * node.height;
       });
 
       // edge 그리기
@@ -112,6 +121,7 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
           nodeList.push(node);
         }
       });
+      console.log(nodeList);
 
       // 노드 그리기
       const nodes = documentElement

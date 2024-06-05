@@ -10,7 +10,6 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
               {"전체 실루엣 계수 : " + results.data.silhouette_score}
             </div>
             <div style={{ padding: "8px" }}>
-              {console.log(results)}
               <div>{"<<< 분석 옵션 >>>"}</div>
               <div>
                 {"Similarity : " + results.data.option.similarity_method}

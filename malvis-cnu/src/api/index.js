@@ -7,12 +7,8 @@ const instance = axios.create({
   baseURL: "http://localhost:8888",
 });
 
-// export const requestHierarchicalClustring = (data) => {
-//   return instance.post("/cluster/hierarchical", data);
-// };
-
 export const requestHierarchicalClustring = (data) => {
-  return instance.post("/cluster", data);
+  return instance.post("/cluster/hierarchical", data);
 };
 
 export const requestKmeansClustering = (data) => {

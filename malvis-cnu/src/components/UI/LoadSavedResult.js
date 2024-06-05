@@ -4,7 +4,7 @@ import { requestUpload } from "../../api";
 import "./LoadSavedResult.css";
 
 const LoadSavedResult = ({ resultHandler }) => {
-  const inputEl = useRef(null);
+  const loadEl = useRef(null);
 
   const handleLoadResult = async (event) => {
     const savedFile = event.target.files[0];
@@ -13,21 +13,21 @@ const LoadSavedResult = ({ resultHandler }) => {
   };
 
   useEffect(() => {
-    if (inputEl.current !== null) {
-      inputEl.current.addEventListener("input", handleLoadResult);
+    if (loadEl.current !== null) {
+      loadEl.current.addEventListener("change", handleLoadResult);
     }
     return () => {
-      inputEl.current &&
-        inputEl.current.removeEventListener("input", handleLoadResult);
+      loadEl.current &&
+        loadEl.current.addEventListener("change", handleLoadResult);
     };
-  }, [inputEl, handleLoadResult]);
+  }, [loadEl, handleLoadResult]);
 
   return (
     <>
-      <label htmlFor="file">
+      <label htmlFor="load">
         <div className="load_btn">불러오기</div>
       </label>
-      <input type="file" id="file" accept=".csv, .json, .txt" ref={inputEl} />
+      <input type="file" id="load" accept=".json" ref={loadEl} />
     </>
   );
 };
