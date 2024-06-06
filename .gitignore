@@ -26,4 +26,4 @@ yarn-error.log*
 # etc
 tmp.py
 */__pycache__
-
+/server/static/public

@@ -1,16 +1,15 @@
 import "./Aside.css";
 
-const Aside = ({ nodes, results, clusters, clicked, widthStyle }) => {
+const Aside = ({ nodes, results, clusters, clicked }) => {
   return (
     <>
-      <aside className="side-bar" style={widthStyle ? widthStyle : {}}>
+      <aside className="side-bar">
         {results ? (
           <>
             <div style={{ paddingLeft: "8px", height: "5%" }}>
               {"전체 실루엣 계수 : " + results.data.silhouette_score}
             </div>
-            <div style={{ padding: "0 8px 8px 8px" }}>
-              {console.log(results)}
+            <div style={{ padding: "8px" }}>
               <div>{"<<< 분석 옵션 >>>"}</div>
               <div>
                 {"Similarity : " + results.data.option.similarity_method}
@@ -23,18 +22,23 @@ const Aside = ({ nodes, results, clusters, clicked, widthStyle }) => {
                   results.data.option.clustering_method}
               </div>
               <div>
-                {"링크 방식 : " + results.data.option.clustering_option.linkage}
+                {results.algorithm === "hierarchical"
+                  ? "링크 방식 : " +
+                    results.data.option.clustering_option.linkage
+                  : "Max iteration : " +
+                    results.data.option.clustering_option.max_iteration}
               </div>
               <div>
                 {"클러스터 개수 : " +
-                  results.data.option.clustering_option.n_cluster}
+                  (results.data.option.clustering_option.n_cluster ||
+                    results.data.option.clustering_option.k)}
               </div>
             </div>
           </>
         ) : null}
         {clusters && clicked === "edge" ? (
           <div
-            style={{ paddingLeft: "8px", height: "62%", overflow: "scroll" }}
+            style={{ paddingLeft: "8px", height: "60%", overflow: "scroll" }}
           >
             <div>{"두 클러스터 간 거리 : " + clusters[2].data.value}</div>
             <div>

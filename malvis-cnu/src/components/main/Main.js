@@ -7,10 +7,10 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
   const ref = useRef(null);
 
   useEffect(() => {
-    // const width = ref.current.clientWidth;
-    // const height = ref.current.clientHeight;
-    const width = 1000;
-    const height = 800;
+    const width = ref.current.clientWidth;
+    const height = ref.current.clientHeight;
+    // const width = 1000;
+    // const height = 800;
 
     let prevClass = ""; // edge - mouseout 이벤트 복구용 변수
 
@@ -51,40 +51,19 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
       });
       clusterLayout(root);
 
+      // leaf node의 y값 찾기
+      let yleaf = 0;
+      const ratio = 0.01;
       root.descendants().forEach((node) => {
-        node.y += node.data.value * 60;
+        if (node.data.type === "leaf") {
+          yleaf = node.y;
+        }
       });
 
-      function getEdgeInfo(parent) {
-        const left = parent.children[0];
-        const right = parent.children[1];
-
-        const left_cluster = [];
-        const right_cluster = [];
-
-        let stack = [left.data];
-        while (stack.length !== 0) {
-          const current = stack.pop();
-          if (current.type === "leaf") {
-            left_cluster.push(current.name);
-          } else {
-            stack.push(current.children[0]);
-            stack.push(current.children[1]);
-          }
-        }
-        stack = [right.data];
-        while (stack.length !== 0) {
-          const current = stack.pop();
-          if (current.type === "leaf") {
-            right_cluster.push(current.name);
-          } else {
-            stack.push(current.children[0]);
-            stack.push(current.children[1]);
-          }
-        }
-
-        return [left_cluster, right_cluster, parent];
-      }
+      // 찾아낸 y값으로 각 계층의 높이 계산
+      root.descendants().forEach((node) => {
+        node.y = yleaf - yleaf * node.data.value - yleaf * ratio * node.height;
+      });
 
       // edge 그리기
       const edges = documentElement
@@ -192,3 +171,34 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
 });
 
 export default Main;
+
+function getEdgeInfo(parent) {
+  const left = parent.children[0];
+  const right = parent.children[1];
+
+  const left_cluster = [];
+  const right_cluster = [];
+
+  let stack = [left.data];
+  while (stack.length !== 0) {
+    const current = stack.pop();
+    if (current.type === "leaf") {
+      left_cluster.push(current.name);
+    } else {
+      stack.push(current.children[0]);
+      stack.push(current.children[1]);
+    }
+  }
+  stack = [right.data];
+  while (stack.length !== 0) {
+    const current = stack.pop();
+    if (current.type === "leaf") {
+      right_cluster.push(current.name);
+    } else {
+      stack.push(current.children[0]);
+      stack.push(current.children[1]);
+    }
+  }
+
+  return [left_cluster, right_cluster, parent];
+}
