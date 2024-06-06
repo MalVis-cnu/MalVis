@@ -12,7 +12,7 @@ app.use(express.static(publicPath));
 
 // cors 에러 해결을 위한 코드 추가
 app.use(express.json());
-var cors = require("cors");
+const cors = require("cors");
 app.use(cors());
 
 // 업로드 폴더 존재 여부 검증
@@ -108,7 +108,7 @@ const getModelInfo = (req, model_path, fpath) => {
   const similarity_method = req.body.similarity;
   const num_of_ngram = req.body.n_gram;
   /* --------------------- */
-  args = [
+  let args = [
     model_path,
     "-i",
     fpath,
@@ -176,26 +176,40 @@ app.post("/cluster/:clusterAlg", seqUpload.single("seq_data"), (req, res) => {
       console.log(result);
       console.log(req.file.path);
 
+      const deleteUploadedFile = () => {
+        fs.unlink(req.file.path, (err) =>
+          err
+            ? console.log(err)
+            : console.log(`${filePath} 를 정상적으로 삭제했습니다`)
+        );
+      };
+
       switch (code) {
         case EXIT_SUCCESS:
+          deleteUploadedFile();
           res.status(200).send(result); // 파이썬 스크립트의 출력을 클라이언트에 전송
           return;
         case ARGS_NOT_PARSABLE:
+          deleteUploadedFile();
           res.status(400).send("Cannot parse input arguments");
           return;
         case FILE_NOT_EXIST:
+          deleteUploadedFile();
           res.status(400).send("Cannot open file");
           return;
         case NOT_ENOUGH_SEQ_COL:
+          deleteUploadedFile();
           res.status(400).send(
             "Not enough sequence data column \
                 (maybe not included malware's name and malware column)"
           );
           return;
         case INVALID_SEQ_DATA:
+          deleteUploadedFile();
           res.status(400).send("Data is not API sequence numbers");
           return;
         case NOT_ENOUGH_SEQ_RECORD:
+          deleteUploadedFile();
           res
             .status(400)
             .send(
@@ -203,15 +217,19 @@ app.post("/cluster/:clusterAlg", seqUpload.single("seq_data"), (req, res) => {
             );
           return;
         case INVALID_SIMILARITY_METHOD:
+          deleteUploadedFile();
           res.status(400).send("Invalid similarity method");
           return;
         case INVALID_NGRAM_OPTION:
+          deleteUploadedFile();
           res.status(400).send("Invalid ngram option");
           return;
         case INVALID_CLUSTERING_METHOD:
+          deleteUploadedFile();
           res.status(400).send("Invalid clustering option");
           return;
         case INVALID_LINKAGE:
+          deleteUploadedFile();
           res
             .status(400)
             .send(
@@ -219,15 +237,18 @@ app.post("/cluster/:clusterAlg", seqUpload.single("seq_data"), (req, res) => {
             );
           return;
         case INVALID_N_CLUSTER:
+          deleteUploadedFile();
           res.status(400).send(
             "Invalid n_cluster option. \
             the # of cluster must be positive integer"
           );
           return;
         case INVALID_K:
+          deleteUploadedFile();
           res.status(400).send("Invalid K option. The k must be 2 or more");
           return;
         case INVALID_MAX_ITERATION:
+          deleteUploadedFile();
           res.status(400).send(
             "Invalid max iteration option. \
               The max iteration must be in within 1 ~ 100,000 integer"
