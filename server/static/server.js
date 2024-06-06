@@ -257,6 +257,7 @@ app.post("/cluster/:clusterAlg", seqUpload.single("seq_data"), (req, res) => {
       }
     });
   } else {
+    deleteUploadedFile();
     res.status(400).send("파일 형식은 CSV만 가능합니다. ");
   }
 });
@@ -268,12 +269,18 @@ app.post("/upload", procUpload.single("processed_data"), (req, res) => {
   const file_content = fs.readFileSync(filePath);
   let is_json = req.file.filename.endsWith(".json");
 
-  if (is_json) {
-    // 파일 확장자가 json이면 그대로 클라이언트에 전달
-    res.status(200).send(file_content);
-  } else {
-    res.status(400).send("json 형식의 파일이 아닙니다. ");
-  }
+  fs.unlinkSync(filePath, (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (is_json) {
+        // 파일 확장자가 json이면 그대로 클라이언트에 전달
+        res.status(200).send(file_content);
+      } else {
+        res.status(400).send("json 형식의 파일이 아닙니다. ");
+      }
+    }
+  });
 });
 
 app.listen(PORT, () => {
