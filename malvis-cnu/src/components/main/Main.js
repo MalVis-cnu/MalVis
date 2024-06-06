@@ -60,6 +60,7 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
         }
       });
 
+      // 찾아낸 y값으로 각 계층의 높이 계산
       root.descendants().forEach((node) => {
         node.y = yleaf - yleaf * node.data.value - yleaf * ratio * node.height;
       });
@@ -121,7 +122,6 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
           nodeList.push(node);
         }
       });
-      console.log(nodeList);
 
       // 노드 그리기
       const nodes = documentElement

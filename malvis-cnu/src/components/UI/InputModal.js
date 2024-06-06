@@ -18,13 +18,13 @@ const InputModal = ({ onShow, onSend }) => {
 
   const [kmeansValues, setKmeansValues] = useState({
     algorithm: "kmeans",
-    maxIter: "100",
+    max_iter: "100",
     k: "2",
   });
 
   const { similarity, n_gram } = similarityValues;
   const { link, cluster } = hierarchicalValues;
-  const { maxIter, k } = kmeansValues;
+  const { max_iter, k } = kmeansValues;
 
   const handleSelectedSimilarity = (event) => {
     const { id, value } = event.target;
@@ -57,7 +57,26 @@ const InputModal = ({ onShow, onSend }) => {
 
   const exceptionChecker = () => {
     if (n_gram < 2) {
-      return alert("2 이상의 정수를 입력해주세요.");
+      alert("2 이상의 정수를 입력해주세요.");
+      setSimilarityValues({ ...similarityValues, n_gram: 2 });
+    } else if (cluster < 2) {
+      alert("2 이상의 정수를 입력해주세요.");
+      setHierarchicalValues({
+        ...hierarchicalValues,
+        cluster: 2,
+      });
+    } else if (max_iter < 1) {
+      alert("1 이상의 정수를 입력해주세요.");
+      setKmeansValues({
+        ...kmeansValues,
+        max_iter: 100,
+      });
+    } else if (k < 1) {
+      alert("1 이상의 정수를 입력해주세요.");
+      setKmeansValues({
+        ...kmeansValues,
+        k: 2,
+      });
     }
   };
 
@@ -122,7 +141,7 @@ const InputModal = ({ onShow, onSend }) => {
               value={n_gram}
               className="input-number"
               onChange={handleSelectedSimilarity}
-              // onBlur={exceptionChecker}
+              onBlur={exceptionChecker}
             />
           </div>
         </div>
@@ -145,12 +164,12 @@ const InputModal = ({ onShow, onSend }) => {
             <div>
               <input
                 type="radio"
-                id="K-means"
+                id="kmeans"
                 name="clustering"
-                value="K-means"
+                value="kmeans"
                 onChange={handleSelectedAlgorithm}
               />
-              <label htmlFor="K-means">K-means</label>
+              <label htmlFor="kmeans">kmeans</label>
             </div>
           </div>
         </div>
@@ -182,19 +201,20 @@ const InputModal = ({ onShow, onSend }) => {
             </div>
           </div>
         ) : null}
-        {algorithm === "K-means" ? (
+        {algorithm === "kmeans" ? (
           <>
             <div>
-              <label htmlFor="iteration" className="name">
+              <label htmlFor="max_iter" className="name">
                 max iteration
               </label>
               <input
                 type="number"
-                id="iteration"
+                id="max_iter"
                 min="1"
                 className="input-number"
-                value={maxIter}
+                value={max_iter}
                 onChange={handleInput}
+                onBlur={exceptionChecker}
               />
             </div>
             <div>
@@ -208,6 +228,7 @@ const InputModal = ({ onShow, onSend }) => {
                 className="input-number"
                 value={k}
                 onChange={handleInput}
+                onBlur={exceptionChecker}
               />
             </div>
           </>

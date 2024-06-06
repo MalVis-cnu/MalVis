@@ -21,7 +21,7 @@ const SideMenu = ({ result, onHandleResult }) => {
   });
   const [isUploaded, setIsUploaded] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isOpen, setOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(true);
 
   const side = useRef();
 
@@ -30,47 +30,65 @@ const SideMenu = ({ result, onHandleResult }) => {
   };
 
   const sendInputData = (sendedInputData) => {
+    console.log(sendedInputData);
     if (sendedInputData.algorithm === "hierarchical") {
-      const { similarity, n_gram, link, cluster } = sendedInputData;
+      const { algorithm, similarity, n_gram, link, cluster } = sendedInputData;
       setInputData({
         ...inputData,
+        algorithm,
         similarity,
         n_gram,
         link,
         cluster,
       });
+    } else if (sendedInputData.algorithm === "kmeans") {
+      const { algorithm, similarity, n_gram, max_iter, k } = sendedInputData;
+      setInputData({
+        ...inputData,
+        algorithm,
+        similarity,
+        n_gram,
+        max_iter,
+        k,
+      });
     }
   };
 
   const uploadData = (data) => {
-    console.log(inputData);
     setInputData({ ...inputData, seq_data: data });
     setIsUploaded(true);
   };
 
+  const errorHandler = (error) => {
+    if (error.response) {
+      const errorText = error.response.data;
+      return alert(errorText);
+    }
+  };
+
   const handleSubmit = async () => {
-    console.log(inputData);
     if (!isUploaded) {
       return alert("분석할 데이터 파일을 업로드해주세요.");
     }
     setIsProcessing(true);
-
-    if (inputData.algorithm === "hierarchical") {
-      const response = await requestHierarchicalClustring(inputData);
-      // const response = await requestHierarchicalClustring();
+    try {
+      if (inputData.algorithm === "hierarchical") {
+        const response = await requestHierarchicalClustring(inputData);
+        onHandleResult({ ...response, algorithm: "hierarchical" });
+      } else if (inputData.algorithm === "kmeans") {
+        const response = await requestKmeansClustering(inputData);
+        onHandleResult({ ...response, algorithm: "kmeans" });
+      }
+      setIsOpen(false);
+    } catch (error) {
+      errorHandler(error);
+    } finally {
       setIsProcessing(false);
-      setOpen(false);
-      onHandleResult(response);
-    } else if (inputData.algorithm === "kmeans") {
-      const response = await requestKmeansClustering(inputData);
-      setIsProcessing(false);
-      setOpen(false);
-      onHandleResult(response);
     }
   };
 
   const toggleMenu = () => {
-    setOpen(!isOpen);
+    setIsOpen(!isOpen);
   };
 
   const downloadJsonFile = () => {

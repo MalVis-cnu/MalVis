@@ -22,11 +22,16 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
                   results.data.option.clustering_method}
               </div>
               <div>
-                {"링크 방식 : " + results.data.option.clustering_option.linkage}
+                {results.algorithm === "hierarchical"
+                  ? "링크 방식 : " +
+                    results.data.option.clustering_option.linkage
+                  : "Max iteration : " +
+                    results.data.option.clustering_option.max_iteration}
               </div>
               <div>
                 {"클러스터 개수 : " +
-                  results.data.option.clustering_option.n_cluster}
+                  (results.data.option.clustering_option.n_cluster ||
+                    results.data.option.clustering_option.k)}
               </div>
             </div>
           </>

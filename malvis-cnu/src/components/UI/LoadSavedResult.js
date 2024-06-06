@@ -1,15 +1,35 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { requestUpload } from "../../api";
 
 import "./LoadSavedResult.css";
 
 const LoadSavedResult = ({ resultHandler }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const loadEl = useRef(null);
 
+  const errorHandler = (error) => {
+    if (error.response) {
+      const errorText = error.response.data;
+      return alert(errorText);
+    }
+  };
+
   const handleLoadResult = async (event) => {
-    const savedFile = event.target.files[0];
-    const response = await requestUpload({ processed_data: savedFile });
-    resultHandler(response);
+    if (event.target && event.target.files.length > 0) {
+      const savedFile = event.target.files[0];
+      setIsLoading(true);
+      loadEl.current.disabled = true;
+      try {
+        const response = await requestUpload({ processed_data: savedFile });
+        resultHandler(response);
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setIsLoading(false);
+        loadEl.current.disabled = false;
+      }
+    }
   };
 
   useEffect(() => {
@@ -18,14 +38,16 @@ const LoadSavedResult = ({ resultHandler }) => {
     }
     return () => {
       loadEl.current &&
-        loadEl.current.addEventListener("change", handleLoadResult);
+        loadEl.current.removeEventListener("change", handleLoadResult);
     };
-  }, [loadEl, handleLoadResult]);
+  }, []);
 
   return (
     <>
       <label htmlFor="load">
-        <div className="load_btn">불러오기</div>
+        <div className={isLoading ? "now-loading" : "load-btn"}>
+          {isLoading ? "로딩 중..." : "불러오기"}
+        </div>
       </label>
       <input type="file" id="load" accept=".json" ref={loadEl} />
     </>

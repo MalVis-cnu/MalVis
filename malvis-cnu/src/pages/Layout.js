@@ -4,10 +4,11 @@ import Main from "../components/main/Main";
 
 import "./Layout.css";
 import SideMenu from "../components/UI/SideMenu";
+import MainForKmeans from "../components/main/MainForKmeans";
 
 const Layout = () => {
   const [result, setResult] = useState(null);
-  const [dataForHierarchy, setDataForHierarchy] = useState(null);
+  const [dataForVisualizing, setDataForVisualizing] = useState(null);
   const [nodes, setNodes] = useState([]);
   const [clusters, setClusters] = useState(null);
 
@@ -15,7 +16,12 @@ const Layout = () => {
 
   const handleResult = (result) => {
     setResult(result);
-    setDataForHierarchy(processResult(result.data));
+
+    if (result.algorithm === "hierarchical") {
+      setDataForVisualizing(processResult(result.data));
+    } else if (result.algorithm === "kmeans") {
+      setDataForVisualizing(processKmeans(result.data));
+    }
   };
 
   const sendDetail = useCallback((node) => {
@@ -45,11 +51,15 @@ const Layout = () => {
         clusters={clusters}
         clicked={clicked}
       />
-      <Main
-        data={dataForHierarchy}
-        onSendDetail={sendDetail}
-        onSendClusters={handleClusters}
-      />
+      {result && result.algorithm === "hierarchical" ? (
+        <Main
+          data={dataForVisualizing}
+          onSendDetail={sendDetail}
+          onSendClusters={handleClusters}
+        />
+      ) : (
+        <MainForKmeans data={dataForVisualizing} onSendDetail={sendDetail} />
+      )}
       <SideMenu result={result} onHandleResult={handleResult} />
     </div>
   );
@@ -113,6 +123,26 @@ function processResult(result) {
 
   const root = arr[arr.length - 1];
   return root;
+}
+
+function processKmeans(result) {
+  console.log(result);
+  const nodes = [];
+  const links = [];
+  const centers = result.centers;
+
+  for (let i = 0; i < result.clusters.length; i++) {
+    result.clusters[i].forEach((node) => {
+      nodes.push({ id: node, group: i });
+      links.push({
+        source: centers[i],
+        target: node,
+        length: result.distance_matrix[centers[i]][node],
+      });
+    });
+  }
+
+  return { nodes, links };
 }
 
 export default Layout;
