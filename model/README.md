@@ -1,12 +1,14 @@
 # 사용법
 
 ```
-usage: main.py [-h] [-i INPUT_DATA] [--similarity-method SIMILARITY_METHOD] [--similarity-option [SIMILARITY_OPTION ...]]
-               [--clustering-method CLUSTERING_METHOD] [--clustering-option [CLUSTERING_OPTION ...]]
+usage: main.py [-h] -i INPUT_DATA [-d] [--similarity-method SIMILARITY_METHOD]
+               [--similarity-option [SIMILARITY_OPTION ...]] [--clustering-method CLUSTERING_METHOD]
+               [--clustering-option [CLUSTERING_OPTION ...]]
 
 options:
   -h, --help            show this help message and exit
   -i INPUT_DATA         input file path
+  -d                    debug flag
   --similarity-method SIMILARITY_METHOD
                         select similarity method ['jaccard', 'cosine']
   --similarity-option [SIMILARITY_OPTION ...]
@@ -26,6 +28,7 @@ options:
                         kmeans:
                         	k [int]
                         	max_iteration [int]
+
 
 ```
 사용 예시
@@ -53,6 +56,7 @@ python main.py ^
 입력 첫 줄은 각 열의 이름.<br>
 첫 번째 열은 악성코드의 hash, 마지막 열은 악성코드 여부.<br>
 최소 2개 이상의 악성코드가 입력으로 주어져야 함.<br>
+시퀀스 데이터들의 길이가 모두 같을 필요 없음.<br>
 
 입력 예시
 |hash|t0|t1|t2|...|t99|malware|
@@ -76,11 +80,9 @@ JSON 데이터, 클러스터링 알고리즘 별 출력 데이터가 아래와 �
         
         'hash' :
             hash[i]는 i번 악성코드의 해쉬값
-            이때 i는 최초 입력의 i와 같음 (labels와 관련이 없음)
         
         'sequence_data' :
             sequence_data[i]는 i번 악성코드의 시퀀스 데이터
-            이때 i는 최초 입력의 i와 같음 (labels와 관련이 없음)
 
         'similar_sequence_matrix' :
             similar_sequence_matrix[i][j]는 악성코드 i와 j의 유사한 시퀀스 목록
@@ -88,6 +90,10 @@ JSON 데이터, 클러스터링 알고리즘 별 출력 데이터가 아래와 �
         'option' :
             분석에 사용된 옵션들
             similarity_method, similarity_option, clustering_method, clustering_option 이 있음
+
+        'time':
+            분석에 소요된 시간
+            total_time, input_time, similarity_time, clustering_time이 있음
     }
 hierarchical:
     {
@@ -107,10 +113,6 @@ hierarchical:
 
         'distances' :
             children[i]에서 묶일 때 각 클러스터와의 거리
-
-        'labels' :
-            출력에서 사용되는 악성코드의 번호. 입력의 i번째 악성코드는 출력에서 labels[i] 로 사용됨
-            children과 clusters 에서 사용됨
             
         'clusters' :
             n_clusters개의 클러스터로 악성코드를 묶은 배열

@@ -133,7 +133,6 @@ def _hierarchical_clustering(distance_matrix, option):
 
     return {'children'          : model.children_.tolist(),
             'distances'         : model.distances_.tolist(),
-            'labels'            : model.labels_.tolist(),
             'clusters'          : clusters,
             'silhouette_score'  : silhouette_score,
             }
@@ -172,7 +171,7 @@ def _kmeans_clustering(distance_matrix, option):
             if i in centers:
                 continue
             else:
-                min_dist_with_center = 1
+                min_dist_with_center = 2
                 center_idx = 0
                 for j, c in enumerate(centers):
                     if min_dist_with_center > distance_matrix[c][i]:
@@ -193,8 +192,6 @@ def _kmeans_clustering(distance_matrix, option):
             new_centers.append(min_avg_idx)
         
         s = str(new_centers)
-        
-        score = _silhouette_score([clusters[i] +[centers[i]] for i in range(k)], distance_matrix)
 
         if s in did:
             break
@@ -204,7 +201,7 @@ def _kmeans_clustering(distance_matrix, option):
         centers = new_centers.copy()
         iter += 1
 
-    return {'clusters':         [clusters[i] + [centers[i]] for i in range(k)],
+    return {'clusters':         [clusters[i] for i in range(k)],
             'centers':          centers,
             'silhouette_score': _silhouette_score([clusters[i] + [centers[i]] for i in range(k)], distance_matrix),
             }
