@@ -64,7 +64,7 @@ def input_data_parsing(input_data):
             break
 
         line = line.split(',')
-        if len(line) < 3:
+        if len(line) <= 3:
             error.print_and_exit(3, 'not enough sequence data column')
 
         try:
