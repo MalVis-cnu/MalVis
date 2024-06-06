@@ -1,34 +1,27 @@
-import { useCallback, useState, useEffect, useRef } from "react";
+import { useCallback, useState, useRef } from "react";
 import Aside from "../components/aside/Aside";
 import Main from "../components/main/Main";
-import InputModal from "../components/UI/InputModal";
-import { createPost } from "../api";
-import Button from "../components/UI/Button";
-import UploadFile from "../components/UI/UploadFile";
 
 import "./Layout.css";
+import SideMenu from "../components/UI/SideMenu";
+import MainForKmeans from "../components/main/MainForKmeans";
 
 const Layout = () => {
   const [result, setResult] = useState(null);
-  const [dataForHierarchy, setDataForHierarchy] = useState(null);
+  const [dataForVisualizing, setDataForVisualizing] = useState(null);
   const [nodes, setNodes] = useState([]);
   const [clusters, setClusters] = useState(null);
 
-  const [modal, setModal] = useState(false);
-  const [inputData, setInputData] = useState({});
-  const [isUploaded, setIsUploaded] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const [isOpen, setOpen] = useState(true);
   const [clicked, setClicked] = useState("");
-  const [widthStyle, setWidthStyle] = useState(null);
-  // const [xPosition, setX] = useState(-width);
-
-  const side = useRef();
 
   const handleResult = (result) => {
     setResult(result);
-    setDataForHierarchy(processResult(result.data));
+
+    if (result.algorithm === "hierarchical") {
+      setDataForVisualizing(processResult(result.data));
+    } else if (result.algorithm === "kmeans") {
+      setDataForVisualizing(processKmeans(result.data));
+    }
   };
 
   const sendDetail = useCallback((node) => {
@@ -44,118 +37,30 @@ const Layout = () => {
     setClicked("node");
   }, []);
 
-  const handleModal = (value) => {
-    setModal(value);
-  };
-
   const handleClusters = useCallback((subClusters) => {
     setClusters(subClusters);
     setClicked("edge");
   }, []);
 
-  const sendInputData = (sendedInputData) => {
-    if (sendedInputData.algorithm === "hierarchical") {
-      const { algorithm, n_gram, link, cluster } = sendedInputData;
-      setInputData({
-        ...inputData,
-        algorithm,
-        n_gram,
-        link,
-        cluster,
-      });
-    }
-  };
-
-  const uploadData = (data) => {
-    setInputData({ ...inputData, seq_data: data });
-    setIsUploaded(true);
-  };
-
-  const handleSubmit = async () => {
-    if (!isUploaded) {
-      return alert("분석할 데이터 파일을 업로드해주세요.");
-    }
-    setIsProcessing(true);
-    const response = await createPost({ seq_data: inputData.seq_data });
-    setIsProcessing(false);
-    setOpen(false);
-    handleResult(response);
-  };
-
-  const toggleMenu = () => {
-    setOpen(!isOpen);
-  };
-
-  const handleClose = (e) => {
-    let sideArea = side.current;
-    if (isOpen && !sideArea) {
-      setOpen(false);
-    }
-  };
-
-  const handleWidthStyle = () => {
-    setWidthStyle({ width: "" });
-  };
-
-  const downloadJsonFile = () => {
-    let element = document.createElement("a");
-    let text = JSON.stringify(result.data);
-    element.setAttribute(
-      "href",
-      "data:text/json;charset=utf-8," + encodeURIComponent(text)
-    );
-    element.setAttribute("download", "result.json");
-    element.style.display = "none"; //하이퍼링크 요소가 보이지 않도록 처리
-    document.body.appendChild(element); //DOM body요소에 하이퍼링크 부착
-    element.click(); //클릭 이벤트 트리거 - 이 시점에 다운로드 발생
-    document.body.removeChild(element); //하이퍼링크 제거
-  };
-
-  useEffect(() => {
-    window.addEventListener("click", handleClose);
-    return () => {
-      window.removeEventListener("click", handleClose);
-    };
-  });
-
   return (
     <div className="layout">
       <Aside
         className="aside"
-        widthStyle={widthStyle}
         nodes={nodes}
         results={result}
         clusters={clusters}
         clicked={clicked}
-        onClick={handleWidthStyle}
       />
-      <Main
-        data={dataForHierarchy}
-        onSendDetail={sendDetail}
-        onSendClusters={handleClusters}
-      />
-      <button className="side-btn" onClick={toggleMenu}>
-        {isOpen ? "➡" : "⬅"}
-      </button>
-      {isOpen ? (
-        <div className="right-sidebar" ref={side}>
-          {modal ? (
-            <InputModal onShow={handleModal} onSend={sendInputData} />
-          ) : (
-            ""
-          )}
-          <UploadFile onUpload={uploadData} />
-          <Button onClick={() => handleModal(true)}>설정</Button>
-          <Button
-            onClick={handleSubmit}
-            className={isProcessing ? "processing" : "start"}
-            isDisabled={isProcessing}
-          >
-            {isProcessing ? "분석 중..." : "분석 시작"}
-          </Button>
-          <Button onClick={downloadJsonFile}>다운로드</Button>
-        </div>
-      ) : null}
+      {result && result.algorithm === "hierarchical" ? (
+        <Main
+          data={dataForVisualizing}
+          onSendDetail={sendDetail}
+          onSendClusters={handleClusters}
+        />
+      ) : (
+        <MainForKmeans data={dataForVisualizing} onSendDetail={sendDetail} />
+      )}
+      <SideMenu result={result} onHandleResult={handleResult} />
     </div>
   );
 };
@@ -164,11 +69,6 @@ function processResult(result) {
   let arr = new Array(result.children.length).fill(0);
   let l = result.hash.length;
 
-  const reverse_labels = new Array(result.labels.length).fill(-1);
-  for (let i in result.labels) {
-    reverse_labels[result.labels[i]] = i;
-  }
-
   for (let i in result.children) {
     const a = result.children[i][0];
     const b = result.children[i][1];
@@ -176,15 +76,15 @@ function processResult(result) {
     if (a < l && b < l) {
       const struct_a = {
         type: "leaf",
-        i: reverse_labels[a],
-        name: result.hash[reverse_labels[a]],
+        i: a,
+        name: result.hash[a],
         value: 0,
         children: [],
       };
       const struct_b = {
         type: "leaf",
-        i: reverse_labels[b],
-        name: result.hash[reverse_labels[b]],
+        i: b,
+        name: result.hash[b],
         value: 0,
         children: [],
       };
@@ -198,8 +98,8 @@ function processResult(result) {
     } else if (a < l && b >= l) {
       const struct_a = {
         type: "leaf",
-        i: reverse_labels[a],
-        name: result.hash[reverse_labels[a]],
+        i: a,
+        name: result.hash[a],
         value: 0,
         children: [],
       };
@@ -223,6 +123,26 @@ function processResult(result) {
 
   const root = arr[arr.length - 1];
   return root;
+}
+
+function processKmeans(result) {
+  console.log(result);
+  const nodes = [];
+  const links = [];
+  const centers = result.centers;
+
+  for (let i = 0; i < result.clusters.length; i++) {
+    result.clusters[i].forEach((node) => {
+      nodes.push({ id: node, group: i });
+      links.push({
+        source: centers[i],
+        target: node,
+        length: result.distance_matrix[centers[i]][node],
+      });
+    });
+  }
+
+  return { nodes, links };
 }
 
 export default Layout;
