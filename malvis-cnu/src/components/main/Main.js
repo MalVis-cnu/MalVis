@@ -23,8 +23,8 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
         .scaleExtent([0.8, 8]) // 축소, 확대 비율
         .translateExtent([
           // 드래그로 이동할 수 있는 범위
-          [-500, -500],
-          [width + 500, height + 500],
+          [-width / 2, -height / 2],
+          [width * 2, height * 2],
         ])
         .on("zoom", (event) => {
           nodes.attr("transform", event.transform);

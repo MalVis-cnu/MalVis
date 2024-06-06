@@ -22,7 +22,7 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
                   results.data.option.clustering_method}
               </div>
               <div>
-                {results.algorithm === "hierarchical"
+                {results.data.option.clustering_method === "hierarchical"
                   ? "링크 방식 : " +
                     results.data.option.clustering_option.linkage
                   : "Max iteration : " +
