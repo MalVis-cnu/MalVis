@@ -67,9 +67,10 @@ const SideMenu = ({ result, onHandleResult, droppedFile }) => {
   };
 
   const handleSubmit = async () => {
-    if (!isUploaded) {
+    if (inputData.seq_data === undefined) {
       return alert("분석할 데이터 파일을 업로드해주세요.");
     }
+
     setIsProcessing(true);
     try {
       if (inputData.algorithm === "hierarchical") {

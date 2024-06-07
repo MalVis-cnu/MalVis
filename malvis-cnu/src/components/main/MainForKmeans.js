@@ -23,8 +23,8 @@ const MainForKmeans = memo(({ data, onSendDetail }) => {
         .scaleExtent([0.5, 8]) // 축소, 확대 비율
         .translateExtent([
           // 드래그로 이동할 수 있는 범위
-          [-500, -500],
-          [width + 500, height + 500],
+          [-width / 2, -height / 2],
+          [width * 2, height * 2],
         ])
         .on("zoom", (event) => {
           node.attr("transform", event.transform);
@@ -36,9 +36,10 @@ const MainForKmeans = memo(({ data, onSendDetail }) => {
         .select(currentElement)
         .call((g) => g.select("svg").remove())
         .append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("transform", "translate(40,0)");
+        .attr("viewBox", `0, 0, ${width}, ${height}`);
+      // .attr("width", width)
+      // .attr("height", height)
+      // .attr("transform", "translate(40,0)");
 
       // zoom 기능 연결
       documentElement.call(zoomer);
@@ -69,7 +70,22 @@ const MainForKmeans = memo(({ data, onSendDetail }) => {
         .selectAll()
         .data(links)
         .join("line")
-        .attr("stroke-width", 2);
+        .attr("stroke-width", 2)
+        .on("click", function (event, info) {
+          console.log(info);
+          // 기존 라인 색상 복원
+          d3.selectAll("line").attr("stroke", "#999");
+
+          // 선택된 노드 복원
+          d3.selectAll("circle")
+            .nodes()
+            .map((circle) => {
+              d3.selectAll("." + circle.classList[0])
+                .attr("fill", circle.classList[0].replace("_", "#"))
+                .attr("r", 7);
+            });
+          d3.select(this).attr("stroke", "red");
+        });
 
       const node = d3
         .select("svg")
@@ -81,8 +97,76 @@ const MainForKmeans = memo(({ data, onSendDetail }) => {
         .join("circle")
         .attr("r", 7)
         .attr("fill", (d) => color(d.group))
+        .attr("class", (d) => color(d.group).replace("#", "_"))
+        .on("mouseover", function (event, info) {
+          d3.select(this).style("cursor", "pointer");
+
+          const viewBox = d3.select("svg").node().getBoundingClientRect();
+          const group1 = d3.select("svg").append("g").attr("class", "group1");
+
+          const name =
+            info.name.length > 7 ? info.name.slice(0, 7) + "..." : info.name;
+
+          const lineInterval = 20;
+          const indentation = 8;
+          const startingPoint = 10;
+
+          group1
+            .append("rect")
+            .attr("x", event.clientX - viewBox.left + startingPoint)
+            .attr("y", event.clientY - viewBox.top + startingPoint)
+            .attr("width", 140)
+            .attr("height", 60)
+            .attr("fill", "#fad390")
+            .attr("opacity", 0.5);
+          group1
+            .append("text")
+            .attr(
+              "x",
+              event.clientX - viewBox.left + startingPoint + indentation
+            )
+            .attr(
+              "y",
+              event.clientY - viewBox.top + startingPoint + lineInterval
+            )
+            .text("hash : " + name);
+          group1
+            .append("text")
+            .attr(
+              "x",
+              event.clientX - viewBox.left + startingPoint + indentation
+            )
+            .attr(
+              "y",
+              event.clientY - viewBox.top + startingPoint + lineInterval * 2
+            )
+            .text("group : " + info.group);
+        })
+        .on("mouseout", function () {
+          d3.select(this).style("cursor", null);
+          d3.select(".group1").remove();
+        })
         .on("click", function (event, info) {
-          console.log(info);
+          const clicked = d3.selectAll("circle").filter(function () {
+            return d3.select(this).attr("fill") === "red";
+          })._groups[0];
+          console.log(clicked);
+
+          // 라인 색상 원래대로 복원
+          d3.selectAll("line").attr("stroke", "#999");
+          if (clicked.length >= 2) {
+            clicked.map((circle) => {
+              d3.selectAll("." + circle.classList[0])
+                .attr("fill", circle.classList[0].replace("_", "#"))
+                .attr("r", 7);
+            });
+          }
+          d3.select(this).attr("fill", "red");
+          d3.select(this).attr("r", 10);
+          const name = nodes[info.index].name;
+          const idx = nodes[info.index].idx;
+          const group = nodes[info.index].group;
+          onSendDetail({ idx, name, group });
         });
 
       // Add a drag behavior.

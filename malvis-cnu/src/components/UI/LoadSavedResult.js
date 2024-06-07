@@ -18,11 +18,14 @@ const LoadSavedResult = ({ resultHandler }) => {
   const handleLoadResult = async (event) => {
     if (event.target && event.target.files.length > 0) {
       const savedFile = event.target.files[0];
+      console.log("여기");
       console.log(savedFile);
       setIsLoading(true);
       loadEl.current.disabled = true;
       try {
         const response = await requestUpload({ processed_data: savedFile });
+        console.log("응답");
+        console.log(response);
         resultHandler(response);
       } catch (error) {
         errorHandler(error);

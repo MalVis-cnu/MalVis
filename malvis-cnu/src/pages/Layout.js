@@ -40,6 +40,8 @@ const Layout = () => {
       const algorithm = result.data.option.clustering_method;
 
       setResult(result);
+      setNodes([]);
+      setClusters(null);
       if (algorithm === "hierarchical") {
         setDataForVisualizing(processResult(result.data));
       } else if (algorithm === "kmeans") {
@@ -169,7 +171,7 @@ function processKmeans(result) {
 
   for (let i = 0; i < result.clusters.length; i++) {
     result.clusters[i].forEach((node) => {
-      nodes.push({ id: node, group: i });
+      nodes.push({ id: node, name: result.hash[node], group: i, idx: node });
       links.push({
         source: centers[i],
         target: node,
