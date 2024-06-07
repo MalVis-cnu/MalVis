@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>파일 업로드</title>
+  </head>
+  <body>
+    <h1>Upload your file</h1>
+    <form
+      action="http://localhost:8888/cluster"
+      method="post"
+      enctype="multipart/form-data">
+      <input type="file" name="seq_data" id="seq_data" />
+      <hr />
+      <input type="submit" value="등록" />
+    </form>
+  </body>
+</html>

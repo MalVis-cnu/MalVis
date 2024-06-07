@@ -154,6 +154,7 @@ app.post("/cluster/:clusterAlg", seqUpload.single("seq_data"), (req, res) => {
   const modelScriptPath = path.join(__dirname, "../../model/main.py");
   const filePath = path.join(__dirname, req.file.path);
 
+  console.log(req.file.path);
   console.log(req.body);
 
   const args = getModelInfo(req, modelScriptPath, filePath);
@@ -176,11 +177,11 @@ app.post("/cluster/:clusterAlg", seqUpload.single("seq_data"), (req, res) => {
       console.log(result);
       console.log(req.file.path);
 
-      const deleteUploadedFile = () => {
-        fs.unlink(req.file.path, (err) =>
+      const deleteUploadedFile = (path = req.file.path) => {
+        fs.unlink(path, (err) =>
           err
             ? console.log(err)
-            : console.log(`${filePath} 를 정상적으로 삭제했습니다`)
+            : console.log(`${path} 를 정상적으로 삭제했습니다`)
         );
       };
 
@@ -269,18 +270,18 @@ app.post("/upload", procUpload.single("processed_data"), (req, res) => {
   const file_content = fs.readFileSync(filePath);
   let is_json = req.file.filename.endsWith(".json");
 
-  fs.unlinkSync(filePath, (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      if (is_json) {
-        // 파일 확장자가 json이면 그대로 클라이언트에 전달
-        res.status(200).send(file_content);
-      } else {
-        res.status(400).send("json 형식의 파일이 아닙니다. ");
-      }
-    }
-  });
+  fs.unlink(filePath, (err) =>
+    err
+      ? console.log(err)
+      : console.log(`${filePath} 를 정상적으로 삭제했습니다`)
+  );
+
+  if (is_json) {
+    // 파일 확장자가 json이면 그대로 클라이언트에 전달
+    res.status(200).send(file_content);
+  } else {
+    res.status(400).send("json 형식의 파일이 아닙니다. ");
+  }
 });
 
 app.listen(PORT, () => {
