@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef } from "react";
+import { useCallback, useState } from "react";
 import Aside from "../components/aside/Aside";
 import Main from "../components/main/Main";
 
@@ -11,16 +11,44 @@ const Layout = () => {
   const [dataForVisualizing, setDataForVisualizing] = useState(null);
   const [nodes, setNodes] = useState([]);
   const [clusters, setClusters] = useState(null);
-
   const [clicked, setClicked] = useState("");
+  const [droppedFile, setDroppedFile] = useState(null);
+
+  const onDragEnter = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  const onDragLeave = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  const onDragOver = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  const dropFileHandler = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDroppedFile(event.dataTransfer.files[0]);
+  };
 
   const handleResult = (result) => {
-    setResult(result);
+    try {
+      const algorithm = result.data.option.clustering_method;
 
-    if (result.algorithm === "hierarchical") {
-      setDataForVisualizing(processResult(result.data));
-    } else if (result.algorithm === "kmeans") {
-      setDataForVisualizing(processKmeans(result.data));
+      setResult(result);
+      setNodes([]);
+      setClusters(null);
+      if (algorithm === "hierarchical") {
+        setDataForVisualizing(processResult(result.data));
+      } else if (algorithm === "kmeans") {
+        setDataForVisualizing(processKmeans(result.data));
+      }
+    } catch (error) {
+      return alert("데이터를 불러올 수 없습니다.");
     }
   };
 
@@ -43,7 +71,13 @@ const Layout = () => {
   }, []);
 
   return (
-    <div className="layout">
+    <div
+      className="layout"
+      onDragEnter={onDragEnter}
+      onDragLeave={onDragLeave}
+      onDragOver={onDragOver}
+      onDrop={dropFileHandler}
+    >
       <Aside
         className="aside"
         nodes={nodes}
@@ -51,7 +85,7 @@ const Layout = () => {
         clusters={clusters}
         clicked={clicked}
       />
-      {result && result.algorithm === "hierarchical" ? (
+      {result && result.data.option.clustering_method === "hierarchical" ? (
         <Main
           data={dataForVisualizing}
           onSendDetail={sendDetail}
@@ -60,7 +94,11 @@ const Layout = () => {
       ) : (
         <MainForKmeans data={dataForVisualizing} onSendDetail={sendDetail} />
       )}
-      <SideMenu result={result} onHandleResult={handleResult} />
+      <SideMenu
+        result={result}
+        onHandleResult={handleResult}
+        droppedFile={droppedFile}
+      />
     </div>
   );
 };
@@ -133,7 +171,7 @@ function processKmeans(result) {
 
   for (let i = 0; i < result.clusters.length; i++) {
     result.clusters[i].forEach((node) => {
-      nodes.push({ id: node, group: i });
+      nodes.push({ id: node, name: result.hash[node], group: i, idx: node });
       links.push({
         source: centers[i],
         target: node,

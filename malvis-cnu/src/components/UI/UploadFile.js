@@ -2,13 +2,17 @@ import "./UploadFile.css";
 
 import { useRef, useEffect, useCallback, useState } from "react";
 
-const UploadFile = ({ onUpload }) => {
+const UploadFile = ({ onUpload, fileFromLayout }) => {
   const inputEl = useRef(null);
   const [fileName, setFileName] = useState("");
   const fileInputHandler = useCallback(
     (event) => {
       const files = event.target && event.target.files;
       if (files && files[0]) {
+        const maxSize = 500 * 1024 * 1024;
+        if (files[0].size > maxSize) {
+          return alert("파일 크기는 500MB 미만이어야 합니다.");
+        }
         setFileName(event.target.files[0].name);
         onUpload(event.target.files[0]);
       }
@@ -20,11 +24,16 @@ const UploadFile = ({ onUpload }) => {
     if (inputEl.current !== null) {
       inputEl.current.addEventListener("input", fileInputHandler);
     }
+
+    if (fileFromLayout) {
+      setFileName(fileFromLayout.name);
+    }
+
     return () => {
       inputEl.current &&
         inputEl.current.removeEventListener("input", fileInputHandler);
     };
-  }, [inputEl, fileInputHandler]);
+  }, [inputEl, fileInputHandler, fileFromLayout]);
 
   return (
     <>

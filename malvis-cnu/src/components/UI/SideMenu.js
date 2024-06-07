@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import InputModal from "./InputModal";
 import {
   requestHierarchicalClustring,
@@ -10,7 +10,7 @@ import UploadFile from "./UploadFile";
 import "./SideMenu.css";
 import LoadSavedResult from "./LoadSavedResult";
 
-const SideMenu = ({ result, onHandleResult }) => {
+const SideMenu = ({ result, onHandleResult, droppedFile }) => {
   const [modal, setModal] = useState(false);
   const [inputData, setInputData] = useState({
     algorithm: "hierarchical",
@@ -67,17 +67,18 @@ const SideMenu = ({ result, onHandleResult }) => {
   };
 
   const handleSubmit = async () => {
-    if (!isUploaded) {
+    if (inputData.seq_data === undefined) {
       return alert("분석할 데이터 파일을 업로드해주세요.");
     }
+
     setIsProcessing(true);
     try {
       if (inputData.algorithm === "hierarchical") {
         const response = await requestHierarchicalClustring(inputData);
-        onHandleResult({ ...response, algorithm: "hierarchical" });
+        onHandleResult(response);
       } else if (inputData.algorithm === "kmeans") {
         const response = await requestKmeansClustering(inputData);
-        onHandleResult({ ...response, algorithm: "kmeans" });
+        onHandleResult(response);
       }
       setIsOpen(false);
     } catch (error) {
@@ -106,8 +107,14 @@ const SideMenu = ({ result, onHandleResult }) => {
   };
 
   const handleLoadedResult = (data) => {
+    console.log(data);
     onHandleResult(data);
   };
+
+  useEffect(() => {
+    uploadData(droppedFile);
+    setIsOpen(true);
+  }, [droppedFile]);
 
   return (
     <div className="right-sidebar-container">
@@ -121,7 +128,7 @@ const SideMenu = ({ result, onHandleResult }) => {
           ) : (
             ""
           )}
-          <UploadFile onUpload={uploadData} />
+          <UploadFile onUpload={uploadData} fileFromLayout={droppedFile} />
           <Button onClick={() => handleModal(true)}>설정</Button>
           <Button
             onClick={handleSubmit}

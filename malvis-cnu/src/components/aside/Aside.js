@@ -1,16 +1,20 @@
 import "./Aside.css";
 
 const Aside = ({ nodes, results, clusters, clicked }) => {
+  if (results && results.data === undefined) {
+    results = { data: results };
+  }
+
   return (
     <>
       <aside className="side-bar">
         {results ? (
           <>
-            <div style={{ paddingLeft: "8px", height: "5%" }}>
+            <div style={{ paddingLeft: "8px", height: "3%" }}>
               {"전체 실루엣 계수 : " + results.data.silhouette_score}
             </div>
             <div style={{ padding: "8px" }}>
-              <div>{"<<< 분석 옵션 >>>"}</div>
+              <h3 style={{ margin: "0 0 8px 0" }}>{"<<< 분석 옵션 >>>"}</h3>
               <div>
                 {"Similarity : " + results.data.option.similarity_method}
               </div>
@@ -22,7 +26,7 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
                   results.data.option.clustering_method}
               </div>
               <div>
-                {results.algorithm === "hierarchical"
+                {results.data.option.clustering_method === "hierarchical"
                   ? "링크 방식 : " +
                     results.data.option.clustering_option.linkage
                   : "Max iteration : " +
@@ -56,7 +60,7 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
           </div>
         ) : null}
         {nodes.length === 1 && clicked === "node" ? (
-          <div style={{ overflow: "scroll", height: "62%" }}>
+          <div style={{ overflow: "scroll", height: "60%" }}>
             <div className="compare-box">
               <div className="compare-item-seq">
                 <div>시퀀스</div>
