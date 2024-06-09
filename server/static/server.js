@@ -162,6 +162,12 @@ app.post("/cluster/:clusterAlg", seqUpload.single("seq_data"), (req, res) => {
   let is_csv = req.file.filename.endsWith(".csv");
   let result = "";
 
+  const deleteUploadedFile = (path = req.file.path) => {
+    fs.unlink(path, (err) =>
+      err ? console.log(err) : console.log(`${path} 를 정상적으로 삭제했습니다`)
+    );
+  };
+
   if (is_csv) {
     const py_cluster_model = spawn(pythonCommand, args); // python cluster model
     py_cluster_model.stdout.on("data", (data) => {
@@ -176,14 +182,6 @@ app.post("/cluster/:clusterAlg", seqUpload.single("seq_data"), (req, res) => {
       console.log(`Python script exited with code ${code}`);
       console.log(result);
       console.log(req.file.path);
-
-      const deleteUploadedFile = (path = req.file.path) => {
-        fs.unlink(path, (err) =>
-          err
-            ? console.log(err)
-            : console.log(`${path} 를 정상적으로 삭제했습니다`)
-        );
-      };
 
       switch (code) {
         case EXIT_SUCCESS:
