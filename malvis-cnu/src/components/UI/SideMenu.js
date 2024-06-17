@@ -30,7 +30,6 @@ const SideMenu = ({ result, onHandleResult, droppedFile }) => {
   };
 
   const sendInputData = (sendedInputData) => {
-    console.log(sendedInputData);
     if (sendedInputData.algorithm === "hierarchical") {
       const { algorithm, similarity, n_gram, link, cluster } = sendedInputData;
       setInputData({
@@ -67,10 +66,9 @@ const SideMenu = ({ result, onHandleResult, droppedFile }) => {
   };
 
   const handleSubmit = async () => {
-    if (inputData.seq_data === undefined) {
-      return alert("분석할 데이터 파일을 업로드해주세요.");
+    if (!isUploaded) {
+      return alert("분석할 데이터 파일을 선택해주세요.");
     }
-
     setIsProcessing(true);
     try {
       if (inputData.algorithm === "hierarchical") {
@@ -107,12 +105,13 @@ const SideMenu = ({ result, onHandleResult, droppedFile }) => {
   };
 
   const handleLoadedResult = (data) => {
-    console.log(data);
     onHandleResult(data);
   };
 
   useEffect(() => {
-    uploadData(droppedFile);
+    if (droppedFile !== null) {
+      uploadData(droppedFile);
+    }
     setIsOpen(true);
   }, [droppedFile]);
 

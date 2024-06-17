@@ -5,20 +5,20 @@ import { useRef, useEffect, useCallback, useState } from "react";
 const UploadFile = ({ onUpload, fileFromLayout }) => {
   const inputEl = useRef(null);
   const [fileName, setFileName] = useState("");
-  const fileInputHandler = useCallback(
-    (event) => {
-      const files = event.target && event.target.files;
-      if (files && files[0]) {
-        const maxSize = 500 * 1024 * 1024;
-        if (files[0].size > maxSize) {
-          return alert("파일 크기는 500MB 미만이어야 합니다.");
-        }
-        setFileName(event.target.files[0].name);
+  const fileInputHandler = useCallback((event) => {
+    const files = event.target && event.target.files;
+    if (files && files[0]) {
+      const maxSize = 500 * 1024 * 1024;
+      if (files[0].size > maxSize) {
+        return alert("파일 크기는 500MB 미만이어야 합니다.");
+      }
+      setFileName(event.target.files[0].name);
+      console.log(event.target.files[0]);
+      if (event.target.files[0] !== null) {
         onUpload(event.target.files[0]);
       }
-    },
-    [onUpload]
-  );
+    }
+  }, []);
 
   useEffect(() => {
     if (inputEl.current !== null) {
