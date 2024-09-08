@@ -38,7 +38,14 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
         .append("svg")
         .attr("width", width)
         .attr("height", height)
-        .attr("transform", "translate(40,0)");
+        .attr("transform", "translate(40,0)")
+        .on("click", function () {
+          d3.selectAll("text").attr("stroke", "black");
+          onSendDetail({});
+
+          if (edges) {
+          }
+        });
 
       // zoom 기능 연결
       documentElement.call(zoomer);
@@ -151,6 +158,7 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
           d3.select(this).style("cursor", null);
         })
         .on("click", function (event, info) {
+          event.stopPropagation();
           d3.selectAll("path").attr("stroke", "#5b9dff");
           const clicked = d3.selectAll("text").filter(function () {
             return d3.select(this).attr("stroke") === "red";

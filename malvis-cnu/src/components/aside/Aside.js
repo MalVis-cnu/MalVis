@@ -11,7 +11,7 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
         {results ? (
           <>
             <div style={{ paddingLeft: "8px", height: "3%" }}>
-              {"전체 실루엣 계수 : " + results.data.silhouette_score}
+              {"전체 실루엣 계수 : " + results.data.silhouette_score.toFixed(5)}
             </div>
             <div style={{ padding: "8px" }}>
               <h3 style={{ margin: "0 0 8px 0" }}>{"<<< 분석 옵션 >>>"}</h3>
@@ -59,6 +59,7 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
             </div>
           </div>
         ) : null}
+        {results && nodes.length === 0 ? null : null}
         {nodes.length === 1 && clicked === "node" ? (
           <div style={{ overflow: "scroll", height: "60%" }}>
             <div className="compare-box">
