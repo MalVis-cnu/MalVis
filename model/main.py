@@ -111,7 +111,7 @@ def main(args):
     end_clustering_time = time.time()
     
     clustering_result['distance_matrix'] = distance_matrix
-    clustering_result['hash'] = hash
+    clustering_result['hash'] = list(map(lambda x: x.upper(), hash))
     clustering_result['sequence_data'] = input_data
     clustering_result['similar_sequence_matrix'] = similar_sequence_matrix
     clustering_result['option'] = {

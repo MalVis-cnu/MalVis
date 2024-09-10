@@ -53,6 +53,11 @@ const Layout = () => {
   };
 
   const sendDetail = useCallback((node) => {
+    if (Object.keys(node).length === 0) {
+      setNodes([]);
+      return;
+    }
+
     setNodes((nodes) => {
       if (nodes.length < 2) {
         const newNodes = nodes.filter(({ idx }) => idx !== node.idx);
