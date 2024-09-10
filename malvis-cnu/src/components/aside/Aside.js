@@ -44,7 +44,9 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
           <div
             style={{ paddingLeft: "8px", height: "60%", overflow: "scroll" }}
           >
-            <div>{"두 클러스터 간 거리 : " + clusters[2].data.value}</div>
+            <div>
+              {"두 클러스터 간 거리 : " + clusters[2].data.value.toFixed(5)}
+            </div>
             <div>
               <h3>Right Cluster</h3>
               {clusters[0].map((c, i) => (
@@ -121,7 +123,10 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
               </div>
             </div>
             <div>{`두 악성코드 간 유사도: ${
-              1 - results.data.distance_matrix[nodes[0].idx][nodes[1].idx]
+              1 -
+              results.data.distance_matrix[nodes[0].idx][nodes[1].idx].toFixed(
+                5
+              )
             }`}</div>
             <div
               className="similar-seq-box"

@@ -41,10 +41,14 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
         .attr("transform", "translate(40,0)")
         .on("click", function () {
           d3.selectAll("text").attr("stroke", "black");
+          d3.selectAll("path")
+            .attr("stroke", "#5b9dff")
+            .on("mouseout", function () {
+              // 마우스를 치웠을 때 이벤트
+              d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#5b9dff");
+            });
           onSendDetail({});
-
-          if (edges) {
-          }
+          onSendClusters(null);
         });
 
       // zoom 기능 연결
@@ -98,16 +102,18 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
         .attr("stroke-width", 3)
         .on("mouseover", function () {
           // 마우스 오버 시 이벤트
+          d3.select(this).style("cursor", "pointer");
           d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#e1b12c");
         })
         .on("mouseout", function () {
           // 마우스를 치웠을 때 이벤트
+          d3.select(this).style("cursor", null);
           d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#5b9dff");
         })
         .on("click", function (event, info) {
           // 클릭 시 이벤트
+          event.stopPropagation();
           d3.selectAll("text").attr("stroke", "black"); // 기존 노드 클릭 정보 제거
-          documentElement.selectAll(".distance").remove(); // 기존 엣지 정보 표시 제거
           if (prevClass !== "") {
             // 클릭됐었던 엣지에 mouseout 이벤트 복구
             d3.selectAll(prevClass).on("mouseout", function () {
