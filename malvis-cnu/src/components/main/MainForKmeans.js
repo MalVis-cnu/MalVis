@@ -36,7 +36,22 @@ const MainForKmeans = memo(({ data, onSendDetail }) => {
         .select(currentElement)
         .call((g) => g.select("svg").remove())
         .append("svg")
-        .attr("viewBox", `0, 0, ${width}, ${height}`);
+        .attr("viewBox", `0, 0, ${width}, ${height}`)
+        .on("click", function (event) {
+          if (event.target.tagName === 'svg') {
+            d3.selectAll("line").attr("stroke", "#999");
+
+            // 선택된 노드 복원
+            d3.selectAll("circle")
+              .nodes()
+              .map((circle) => {
+                d3.selectAll("." + circle.classList[0])
+                  .attr("fill", circle.classList[0].replace("_", "#"))
+                  .attr("r", 7);
+              });
+            onSendDetail({});
+          }
+        });
       // .attr("width", width)
       // .attr("height", height)
       // .attr("transform", "translate(40,0)");
