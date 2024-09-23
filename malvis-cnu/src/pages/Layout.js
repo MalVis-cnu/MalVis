@@ -13,6 +13,7 @@ const Layout = () => {
   const [clusters, setClusters] = useState(null);
   const [clicked, setClicked] = useState("");
   const [droppedFile, setDroppedFile] = useState(null);
+  const [visual, setVisual] = useState(null); ////////////////////////////////////////////////////
 
   const onDragEnter = (event) => {
     event.preventDefault();
@@ -42,9 +43,12 @@ const Layout = () => {
       setResult(result);
       setNodes([]);
       setClusters(null);
+      console.log(result);///////////////////////////////////////////////
       if (algorithm === "hierarchical") {
+        setVisual('dendrogram'); ////////////////////////////////////////////////////
         setDataForVisualizing(processResult(result.data));
       } else if (algorithm === "kmeans") {
+        setVisual('plot');  ////////////////////////////////////////////////////
         setDataForVisualizing(processKmeans(result.data));
       }
     } catch (error) {
@@ -75,6 +79,18 @@ const Layout = () => {
     setClicked("edge");
   }, []);
 
+  // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  const toggleMain = () => {
+    if (visual === "dendrogram") {
+      setVisual('plot');
+      setDataForVisualizing(processKmeans(result.data));
+    } else if (visual === "plot") {
+      setVisual('dendrogram');
+      setDataForVisualizing(processResult(result.data));
+    }
+  };
+  // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
   return (
     <div
       className="layout"
@@ -83,6 +99,9 @@ const Layout = () => {
       onDragOver={onDragOver}
       onDrop={dropFileHandler}
     >
+      {/* {@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@22 */}
+      {(result && result.data.option.clustering_method === "hierarchical") ? (<button style={{ position:'absolute', left:'50%', right:'50%', width:'200px', height:'50px', zIndex:'100'}}onClick={toggleMain}>Toggle</button>) : (<></>)}
+      {/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */}
       <Aside
         className="aside"
         nodes={nodes}
@@ -90,7 +109,10 @@ const Layout = () => {
         clusters={clusters}
         clicked={clicked}
       />
-      {result && result.data.option.clustering_method === "hierarchical" ? (
+      {
+      //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2
+      visual === "dendrogram" ? (
+        //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         <Main
           data={dataForVisualizing}
           onSendDetail={sendDetail}
