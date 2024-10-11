@@ -119,7 +119,7 @@ const Main = memo(({ data, result, onSendDetail, onSendClusters }) => {
 
           prevClass = this;
           initDendrogramColor(d3, result, prevClass);
-          d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#e1b12c");
+          d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#e1b12c").attr("stroke-width", 5);
           const edgeInfo = getEdgeInfo(info.parent);
           setLRClusterColor(d3, edgeInfo);
           onSendClusters(edgeInfo);
@@ -273,7 +273,7 @@ function initDendrogramColor(d3, result, selectedPath) {
       if (selectedPath && path.className.baseVal === selectedPath.className.baseVal)
         continue
       else
-        d3.select(path).attr("stroke", color(i));
+        d3.select(path).attr("stroke", color(i)).attr("stroke-width", 3);
     }
   }
 
