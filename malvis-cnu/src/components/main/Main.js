@@ -3,8 +3,11 @@ import { useEffect, useRef, memo } from "react";
 
 import "./Main.css";
 
-const Main = memo(({ data, onSendDetail, onSendClusters }) => {
+
+
+const Main = memo(({ data, result, onSendDetail, onSendClusters }) => {
   const ref = useRef(null);
+
 
   useEffect(() => {
     const width = ref.current.clientWidth;
@@ -40,15 +43,13 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
         .attr("height", height)
         .attr("transform", "translate(40,0)")
         .on("click", function () {
-          d3.selectAll("text").attr("stroke", "black");
-          d3.selectAll("path")
-            .attr("stroke", "#5b9dff")
-            .on("mouseout", function () {
-              // 마우스를 치웠을 때 이벤트
-              d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#5b9dff");
-            });
-          onSendDetail({});
-          onSendClusters(null);
+          if (this.tagName === 'svg') {
+            d3.selectAll("text").attr("stroke", "black");
+            prevClass = '';
+            initDendrogramColor(d3, result, prevClass);;
+            onSendDetail({});
+            onSendClusters(null);
+          }
         });
 
       // zoom 기능 연결
@@ -108,21 +109,16 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
         .on("mouseout", function () {
           // 마우스를 치웠을 때 이벤트
           d3.select(this).style("cursor", null);
-          d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#5b9dff");
+          // d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#5b9dff");
+          initDendrogramColor(d3, result, prevClass);
         })
         .on("click", function (event, info) {
           // 클릭 시 이벤트
           event.stopPropagation();
           d3.selectAll("text").attr("stroke", "black"); // 기존 노드 클릭 정보 제거
-          if (prevClass !== "") {
-            // 클릭됐었던 엣지에 mouseout 이벤트 복구
-            d3.selectAll(prevClass).on("mouseout", function () {
-              d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#5b9dff");
-            });
-          }
-          prevClass = `.${this.classList[0]}`; // mouseout 이벤트 복구를 위해 현재 클릭한 엣지의 클래스 명 저장
-          d3.selectAll(`.${this.classList[0]}`).on("mouseout", null); // mouseout 이벤트 제거
-          d3.selectAll("path").attr("stroke", "#5b9dff");
+          
+          prevClass = this;
+          initDendrogramColor(d3, result, prevClass);
           d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#e1b12c");
           onSendClusters(getEdgeInfo(info.parent));
         });
@@ -165,7 +161,9 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
         })
         .on("click", function (event, info) {
           event.stopPropagation();
-          d3.selectAll("path").attr("stroke", "#5b9dff");
+          // d3.selectAll("path").attr("stroke", "#5b9dff");
+          prevClass = '';
+          initDendrogramColor(d3, result, prevClass);
           let clickedList = d3.selectAll("text").filter(function () {
             return d3.select(this).attr("stroke") === "red";
           })._groups[0];
@@ -183,7 +181,6 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
             }
           }
           else if (clicked >= 2) {
-            console.log(clickedList);
             if (clickedList.includes(this)) {
               d3.select(this).attr("stroke", "black");
               onSendDetail({});
@@ -201,9 +198,11 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
             }
           }
         });
+        initDendrogramColor(d3, result, prevClass);;
     }
   }, [data, ref, onSendDetail, onSendClusters]);
-
+  
+  
   return <div className="main" ref={ref}></div>;
 });
 
@@ -239,3 +238,42 @@ function getEdgeInfo(parent) {
 
   return [left_cluster, right_cluster, parent];
 }
+
+function initDendrogramColor(d3, result, selectedPath) {
+  const n_cluster = result.data.option.clustering_option.n_cluster;
+  const clusters = result.data.clusters;
+  const pathList = d3.selectAll("path")._groups[0];
+  const pathClusterList = Array.from({length: n_cluster}, (v,i) => []);
+  
+  for (let path of pathList) {
+    let data = path.__data__;
+    let firstChildren;
+    while (1) {
+      if (data.data.type === "leaf"){
+        firstChildren = data.data.i;
+        break;
+      }
+      data = data.children[0];
+    }
+
+    for(let cluster in clusters) {
+      if (clusters[cluster].includes(firstChildren)) {
+        pathClusterList[cluster].push(path);
+        break;
+      }
+    }
+  }
+
+  const color = d3.scaleOrdinal(d3.schemeCategory10);
+  for (let i in pathClusterList) {
+    const paths = pathClusterList[i];
+    for (let path of paths) {
+      if (selectedPath && path.className.baseVal === selectedPath.className.baseVal)
+        continue
+      else
+        d3.select(path).attr("stroke", color(i));
+    }
+  }
+
+}
+

@@ -108,6 +108,7 @@ const Layout = () => {
       visual === "dendrogram" ? (
         <Main
           data={dataForVisualizing}
+          result={result}
           onSendDetail={sendDetail}
           onSendClusters={handleClusters}
         />
