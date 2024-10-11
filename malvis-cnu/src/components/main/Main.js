@@ -116,11 +116,13 @@ const Main = memo(({ data, result, onSendDetail, onSendClusters }) => {
           // 클릭 시 이벤트
           event.stopPropagation();
           d3.selectAll("text").attr("stroke", "black"); // 기존 노드 클릭 정보 제거
-          
+
           prevClass = this;
           initDendrogramColor(d3, result, prevClass);
           d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#e1b12c");
-          onSendClusters(getEdgeInfo(info.parent));
+          const edgeInfo = getEdgeInfo(info.parent);
+          setLRClusterColor(d3, edgeInfo);
+          onSendClusters(edgeInfo);
         });
 
       // node 그리기
@@ -275,5 +277,19 @@ function initDendrogramColor(d3, result, selectedPath) {
     }
   }
 
+}
+
+function setLRClusterColor(d3, edgeInfo) {
+  const left_cluster = edgeInfo[0];
+  const right_cluster = edgeInfo[1];
+
+  const texts = d3.selectAll('text')._groups[0];
+  
+  for (let text of texts) {
+    if (left_cluster.includes(text.__data__.data.name))
+      d3.select(text).attr("stroke", "red");
+    else if (right_cluster.includes(text.__data__.data.name))
+      d3.select(text).attr("stroke", "blue");
+  }
 }
 

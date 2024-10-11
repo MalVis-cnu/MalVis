@@ -96,7 +96,11 @@ const Layout = () => {
       onDragOver={onDragOver}
       onDrop={dropFileHandler}
     >
-      {(result && result.data.option.clustering_method === "hierarchical") ? (<button style={{ position:'absolute', left:'50%', right:'50%', width:'200px', height:'50px', zIndex:'100'}}onClick={toggleMain}>시각화 방식 변경</button>) : (<></>)}
+      {(result && result.data.option.clustering_method === "hierarchical") ?
+        ((visual === 'dendrogram') ?
+        (<button style={{ position:'absolute', left:'50%', right:'50%', width:'200px', height:'50px', zIndex:'100'}}onClick={toggleMain}>산포도 시각화</button>) :
+        (<button style={{ position:'absolute', left:'50%', right:'50%', width:'200px', height:'50px', zIndex:'100'}}onClick={toggleMain}>덴드로그램 시각화</button>))
+      : (<></>)}
       <Aside
         className="aside"
         nodes={nodes}
