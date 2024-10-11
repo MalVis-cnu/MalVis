@@ -43,12 +43,11 @@ const Layout = () => {
       setResult(result);
       setNodes([]);
       setClusters(null);
-      console.log(result);///////////////////////////////////////////////
       if (algorithm === "hierarchical") {
-        setVisual('dendrogram'); ////////////////////////////////////////////////////
+        setVisual('dendrogram'); 
         setDataForVisualizing(processResult(result.data));
       } else if (algorithm === "kmeans") {
-        setVisual('plot');  ////////////////////////////////////////////////////
+        setVisual('plot');  
         setDataForVisualizing(processKmeans(result.data));
       }
     } catch (error) {
@@ -79,7 +78,6 @@ const Layout = () => {
     setClicked("edge");
   }, []);
 
-  // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
   const toggleMain = () => {
     if (visual === "dendrogram") {
       setVisual('plot');
@@ -89,7 +87,6 @@ const Layout = () => {
       setDataForVisualizing(processResult(result.data));
     }
   };
-  // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
   return (
     <div
@@ -99,9 +96,7 @@ const Layout = () => {
       onDragOver={onDragOver}
       onDrop={dropFileHandler}
     >
-      {/* {@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@22 */}
-      {(result && result.data.option.clustering_method === "hierarchical") ? (<button style={{ position:'absolute', left:'50%', right:'50%', width:'200px', height:'50px', zIndex:'100'}}onClick={toggleMain}>Toggle</button>) : (<></>)}
-      {/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */}
+      {(result && result.data.option.clustering_method === "hierarchical") ? (<button style={{ position:'absolute', left:'50%', right:'50%', width:'200px', height:'50px', zIndex:'100'}}onClick={toggleMain}>시각화 방식 변경</button>) : (<></>)}
       <Aside
         className="aside"
         nodes={nodes}
@@ -110,9 +105,7 @@ const Layout = () => {
         clicked={clicked}
       />
       {
-      //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2
       visual === "dendrogram" ? (
-        //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         <Main
           data={dataForVisualizing}
           onSendDetail={sendDetail}
