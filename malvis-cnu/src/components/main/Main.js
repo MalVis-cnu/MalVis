@@ -166,17 +166,40 @@ const Main = memo(({ data, onSendDetail, onSendClusters }) => {
         .on("click", function (event, info) {
           event.stopPropagation();
           d3.selectAll("path").attr("stroke", "#5b9dff");
-          const clicked = d3.selectAll("text").filter(function () {
+          let clickedList = d3.selectAll("text").filter(function () {
             return d3.select(this).attr("stroke") === "red";
-          })._groups[0].length;
+          })._groups[0];
+          let clicked = clickedList.length;
 
-          if (clicked >= 2) {
-            d3.selectAll("text").attr("stroke", "black");
-          }
           d3.select(this).attr("stroke", "red");
-          const name = info.data.name;
-          const idx = info.data.i;
+          let name = info.data.name;
+          let idx = info.data.i;
           onSendDetail({ idx, name });
+
+          if (clicked === 1) {
+            if (clickedList[0] === this) {
+              d3.select(this).attr("stroke", "black");
+              onSendDetail({});
+            }
+          }
+          else if (clicked >= 2) {
+            console.log(clickedList);
+            if (clickedList.includes(this)) {
+              d3.select(this).attr("stroke", "black");
+              onSendDetail({});
+              clickedList = d3.selectAll("text").filter(function () {
+                return d3.select(this).attr("stroke") === "red";
+              })._groups[0];
+              name = clickedList[0].__data__.data.name;
+              idx = clickedList[0].__data__.data.i;
+              onSendDetail({ idx, name });
+            }
+            else {
+              d3.selectAll("text").attr("stroke", "black");
+              d3.select(this).attr("stroke", "red");
+              onSendDetail({ idx, name });
+            }
+          }
         });
     }
   }, [data, ref, onSendDetail, onSendClusters]);
