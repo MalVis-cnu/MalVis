@@ -39,8 +39,8 @@ const Main = memo(({ data, result, onSendDetail, onSendClusters }) => {
         .select(currentElement)
         .call((g) => g.select("svg").remove())
         .append("svg")
-        .attr("width", width)
-        .attr("height", height)
+        .attr("width", "100%")
+        .attr("height", "100%")
         .attr("transform", "translate(40,0)")
         .on("click", function () {
           if (this.tagName === 'svg') {
