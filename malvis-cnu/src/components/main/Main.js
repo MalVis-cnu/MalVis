@@ -15,7 +15,7 @@ const Main = memo(({ data, result, onSendDetail, onSendClusters }) => {
     // const width = 1000;
     // const height = 800;
 
-    let prevClass = ""; // edge - mouseout 이벤트 복구용 변수
+    let prevClass = ''; // edge - mouseout 이벤트 복구용 변수
 
     if (data) {
       const currentElement = ref.current;
@@ -104,13 +104,19 @@ const Main = memo(({ data, result, onSendDetail, onSendClusters }) => {
         .on("mouseover", function () {
           // 마우스 오버 시 이벤트
           d3.select(this).style("cursor", "pointer");
+          const pathList = d3.selectAll(`.${this.classList[0]}`)._groups[0];
+          d3.select(pathList[0]).attr("beforeStroke", d3.select(pathList[0]).attr("stroke"));
+          d3.select(pathList[1]).attr("beforeStroke", d3.select(pathList[1]).attr("stroke"));
           d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#e1b12c");
         })
         .on("mouseout", function () {
           // 마우스를 치웠을 때 이벤트
           d3.select(this).style("cursor", null);
-          // d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#5b9dff");
-          initDendrogramColor(d3, result, prevClass);
+
+          const pathList = d3.selectAll(`.${this.classList[0]}`)._groups[0];
+          d3.select(pathList[0]).attr("stroke", d3.select(pathList[0]).attr("beforeStroke"));
+          d3.select(pathList[1]).attr("stroke", d3.select(pathList[1]).attr("beforeStroke"));
+          d3.selectAll(`.${this.classList[0]}`).attr("beforeStroke", null);
         })
         .on("click", function (event, info) {
           // 클릭 시 이벤트
@@ -119,7 +125,7 @@ const Main = memo(({ data, result, onSendDetail, onSendClusters }) => {
 
           prevClass = this;
           initDendrogramColor(d3, result, prevClass);
-          d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#e1b12c").attr("stroke-width", 5);
+          d3.selectAll(`.${this.classList[0]}`).attr("stroke", "#e1b12c").attr("stroke-width", 5).attr("beforeStroke", "#e1b12c");
           const edgeInfo = getEdgeInfo(info.parent);
           setLRClusterColor(d3, edgeInfo);
           onSendClusters(edgeInfo);
@@ -170,16 +176,24 @@ const Main = memo(({ data, result, onSendDetail, onSendClusters }) => {
             return d3.select(this).attr("stroke") === "red";
           })._groups[0];
           let clicked = clickedList.length;
-
-          d3.select(this).attr("stroke", "red");
           let name = info.data.name;
           let idx = info.data.i;
-          onSendDetail({ idx, name });
 
-          if (clicked === 1) {
+          if (clicked === 0) {
+            d3.selectAll("text").attr("stroke", "black");
+            d3.select(this).attr("stroke", "red");
+            
+            onSendDetail({ idx, name });
+          }
+          else if (clicked === 1) {
             if (clickedList[0] === this) {
               d3.select(this).attr("stroke", "black");
               onSendDetail({});
+            }
+            else {
+              d3.select(this).attr("stroke", "red");
+              onSendDetail({ idx, name });
+              setRouteColor(d3, clickedList[0].__data__, this.__data__);
             }
           }
           else if (clicked >= 2) {
@@ -287,9 +301,61 @@ function setLRClusterColor(d3, edgeInfo) {
   
   for (let text of texts) {
     if (left_cluster.includes(text.__data__.data.name))
-      d3.select(text).attr("stroke", "red");
+      d3.select(text).attr("stroke", "#fc0101");
     else if (right_cluster.includes(text.__data__.data.name))
       d3.select(text).attr("stroke", "blue");
   }
 }
 
+
+function setRouteColor(d3, node1, node2) {
+  const node1ToRoot = [];
+  const node2ToRoot = [];
+  let parent = node1;
+  
+  while (parent) {
+    node1ToRoot.push(parent);
+    parent = parent.parent;
+  }
+
+  parent = node2;
+  while (parent) {
+    node2ToRoot.push(parent);
+    parent = parent.parent;
+  }
+  
+  const rootToNode1 = node1ToRoot.reverse();
+  const rootToNode2 = node2ToRoot.reverse();
+
+  let idx = 0;
+  while (1) {
+    if (rootToNode1[idx] !== rootToNode2[idx])
+      break;
+    idx++;
+  }
+ idx--;
+  const coloredRoute = [];
+  for (let i = idx; i < rootToNode1.length-1; i++) {
+    let parent_data = rootToNode1[i].data.type + rootToNode1[i].data.name;
+    let my_data = rootToNode1[i+1].data.type + rootToNode1[i+1].data.name;
+    coloredRoute.push(parent_data + my_data);
+  }
+  for (let i = idx; i < rootToNode2.length-1; i++){
+    let parent_data = rootToNode2[i].data.type + rootToNode2[i].data.name;
+    let my_data = rootToNode2[i+1].data.type + rootToNode2[i+1].data.name;
+    coloredRoute.push(parent_data + my_data);
+  }
+
+
+  const paths = d3.selectAll('path')._groups[0];
+  for (let path of paths) {
+    const path_data = path.__data__.parent.data.type + path.__data__.parent.data.name +
+      path.__data__.data.type + path.__data__.data.name;
+
+    if (coloredRoute.includes(path_data)) {
+      d3.select(path).attr("stroke", "red").attr("stroke-width", 5);
+    }
+  }
+
+  
+}
