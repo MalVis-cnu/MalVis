@@ -66,6 +66,17 @@ def do_clustering(distance_matrix, clustering_method, option):
     return valid_clustering_methods[clustering_method](distance_matrix, option)
 
 
+def _get_center_for_hierarchical_clustering(clusters, distance_matrix):
+    centers = []
+    for cluster in clusters:
+        dist_sum = [sum(list(map(lambda x: distance_matrix[i][x], cluster))) for i in cluster]
+        
+        min_val = min(dist_sum)
+        for i, x in enumerate(cluster):
+            if dist_sum[i] == min_val:
+                centers.append(x)
+                break
+    return centers
 
 
 def _hierarchical_clustering(distance_matrix, option):
@@ -134,6 +145,7 @@ def _hierarchical_clustering(distance_matrix, option):
     return {'children'          : model.children_.tolist(),
             'distances'         : model.distances_.tolist(),
             'clusters'          : clusters,
+            'centers'           : _get_center_for_hierarchical_clustering(clusters, distance_matrix),
             'silhouette_score'  : silhouette_score,
             }
 
