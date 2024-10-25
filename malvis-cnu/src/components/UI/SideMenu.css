@@ -5,6 +5,8 @@
   right: 0;
   display: flex;
   z-index: 10;
+  width: 15%;
+  height: 100%;
 }
 
 .right-sidebar {

@@ -23,7 +23,8 @@ const SideMenu = ({ result, onHandleResult, droppedFile }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
 
-  const side = useRef();
+  const sideConRef = useRef(null);
+  const side = useRef(null);
 
   const handleModal = (value) => {
     setModal(value);
@@ -79,6 +80,8 @@ const SideMenu = ({ result, onHandleResult, droppedFile }) => {
         onHandleResult(response);
       }
       setIsOpen(false);
+      side.current.style.display = "none";
+      sideConRef.current.style.width = "auto";
     } catch (error) {
       errorHandler(error);
     } finally {
@@ -87,6 +90,13 @@ const SideMenu = ({ result, onHandleResult, droppedFile }) => {
   };
 
   const toggleMenu = () => {
+    if (!isOpen) {
+      sideConRef.current.style.width = "15%";
+      side.current.style.display = "flex";
+    } else {
+      sideConRef.current.style.width = "auto";
+      side.current.style.display = "none";
+    }
     setIsOpen(!isOpen);
   };
 
@@ -116,38 +126,37 @@ const SideMenu = ({ result, onHandleResult, droppedFile }) => {
   }, [droppedFile]);
 
   return (
-    <div className="right-sidebar-container">
-      <button className="side-btn" onClick={toggleMenu}>
+    <div className="right-sidebar-container" ref={sideConRef}>
+      <button className="side-btn" type="button" onClick={toggleMenu}>
         {isOpen ? "➡" : "⬅"}
       </button>
-      {isOpen ? (
-        <div className="right-sidebar" ref={side}>
-          {modal ? (
-            <InputModal onShow={handleModal} onSend={sendInputData} />
-          ) : (
-            ""
-          )}
-          <UploadFile onUpload={uploadData} fileFromLayout={droppedFile} />
-          <Button onClick={() => handleModal(true)}>설정</Button>
+
+      <div className="right-sidebar" ref={side}>
+        {modal ? (
+          <InputModal onShow={handleModal} onSend={sendInputData} />
+        ) : (
+          ""
+        )}
+        <UploadFile onUpload={uploadData} fileFromLayout={droppedFile} />
+        <Button onClick={() => handleModal(true)}>설정</Button>
+        <Button
+          onClick={handleSubmit}
+          className={isProcessing ? "processing" : "start"}
+          isDisabled={isProcessing}
+        >
+          {isProcessing ? "분석 중..." : "분석 시작"}
+        </Button>
+        <div className="additional-functions">
           <Button
-            onClick={handleSubmit}
-            className={isProcessing ? "processing" : "start"}
-            isDisabled={isProcessing}
+            onClick={downloadJsonFile}
+            className={result ? "download" : "prevent-download"}
+            isDisabled={result ? false : true}
           >
-            {isProcessing ? "분석 중..." : "분석 시작"}
+            결과 다운로드
           </Button>
-          <div className="additional-functions">
-            <Button
-              onClick={downloadJsonFile}
-              className={result ? "download" : "prevent-download"}
-              isDisabled={result ? false : true}
-            >
-              결과 다운로드
-            </Button>
-            <LoadSavedResult resultHandler={handleLoadedResult} />
-          </div>
+          <LoadSavedResult resultHandler={handleLoadedResult} />
         </div>
-      ) : null}
+      </div>
     </div>
   );
 };

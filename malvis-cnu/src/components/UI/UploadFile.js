@@ -36,19 +36,24 @@ const UploadFile = ({ onUpload, fileFromLayout }) => {
   }, [inputEl, fileInputHandler, fileFromLayout]);
 
   return (
-    <>
+    <div>
       <label htmlFor="file">
         {fileName ? (
-          <div className="file-name">{fileName}</div>
+          // <div className="file-name">{fileName}</div>
+          <div className="file-name" style={{ height: "40px" }}>
+            <span>{fileName}</span>
+          </div>
         ) : (
-          <div className="msg">
-            파일을 업로드 하세요 <br /> (.csv, .json, .txt)
+          <div className="msg" style={{ height: "40px" }}>
+            <span>파일을 업로드 하세요</span>
+            <br />
+            <span>(.csv, .json, .txt)</span>
           </div>
         )}
         <div className="file_btn">파일 선택</div>
       </label>
       <input type="file" id="file" accept=".csv, .json, .txt" ref={inputEl} />
-    </>
+    </div>
   );
 };
 
