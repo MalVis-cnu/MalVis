@@ -1,22 +1,32 @@
-.side-bar {
+.aside {
   background: #efefef;
   position: absolute;
   top: 0;
   left: 0;
-  display: flex;
-  flex-direction: column;
+  display: none;
   height: 100%;
-  padding: 20px 0 0 0;
+  width: 25%;
   z-index: 10;
 }
 
-.side-bar > input {
-  margin: 0 0 12px 10%;
+.side-bar {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0 0 0;
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+table,
+td,
+th {
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 
 .compare-box {
-  display: flex;
-  padding: 0 12px 0 12px;
+  margin: 0 12px 0 12px;
   text-align: center;
 }
 
@@ -43,4 +53,16 @@
 .similar-seq-box {
   padding: 0 12px 0 12px;
   text-align: center;
+}
+
+.aside-border-line {
+  padding: 0;
+  width: 4px;
+  border: none;
+  background-color: gray;
+  cursor: col-resize;
+}
+
+.aside-border-line:hover {
+  opacity: 0.8;
 }
