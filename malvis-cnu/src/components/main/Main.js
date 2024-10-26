@@ -20,7 +20,7 @@ const Main = memo(({ data, result, onSendDetail, onSendClusters }) => {
       // zoom 기능 정의
       const zoomer = d3
         .zoom()
-        .scaleExtent([0.8, 8]) // 축소, 확대 비율
+        .scaleExtent([0.1, 8]) // 축소, 확대 비율
         .translateExtent([
           // 드래그로 이동할 수 있는 범위
           [-width / 2, -height / 2],
