@@ -21,11 +21,11 @@ const Main = memo(({ data, result, onSendDetail, onSendClusters }) => {
       const zoomer = d3
         .zoom()
         .scaleExtent([0.1, 8]) // 축소, 확대 비율
-        .translateExtent([
-          // 드래그로 이동할 수 있는 범위
-          [-width / 2, -height / 2],
-          [width * 2, height * 2],
-        ])
+        // .translateExtent([
+        //   // 드래그로 이동할 수 있는 범위
+        //   [-width / 2, -height / 2],
+        //   [width * 2, height * 2],
+        // ])
         .on("zoom", (event) => {
           nodes.attr("transform", event.transform);
           edges.attr("transform", event.transform);
