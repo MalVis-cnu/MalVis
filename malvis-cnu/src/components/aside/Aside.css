@@ -66,3 +66,16 @@ th {
 .aside-border-line:hover {
   opacity: 0.8;
 }
+
+.lr-clusters {
+  display: flex;
+  justify-content: space-between;
+}
+
+.left-cluster {
+  margin-left: 2rem;
+}
+
+.right-cluster {
+  margin-right: 2rem;
+}

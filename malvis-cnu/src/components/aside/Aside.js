@@ -79,6 +79,7 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
               </span>
               <span>{results.data.silhouette_score.toFixed(5)}</span>
             </div>
+            <hr style={{ margin: "8px 8px 0 8px" }} />
             <div style={{ padding: "8px" }}>
               <h3 style={{ margin: "0 0 8px 0" }}>{"<<< 분석 옵션 >>>"}</h3>
               <div>
@@ -127,6 +128,7 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
                     results.data.option.clustering_option.k}
                 </span>
               </div>
+              <hr />
               <div>
                 <span>
                   <strong>데이터 파싱 소요시간 : </strong>
@@ -155,25 +157,37 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
           </>
         ) : null}
         {clusters && clicked === "edge" ? (
-          <div
-            style={{ paddingLeft: "8px", height: "60%", overflow: "scroll" }}
-          >
-            <div>
-              {"두 클러스터 간 거리 : " + clusters[2].data.value.toFixed(5)}
+          <>
+            <hr style={{ margin: "0 8px 8px 8px", padding: 0 }} />
+            <div
+              style={{ paddingLeft: "8px", height: "60%", overflow: "scroll" }}
+            >
+              <div>
+                <span>
+                  <strong>두 클러스터 간 거리 : </strong>
+                </span>
+                <span>{clusters[2].data.value.toFixed(5)}</span>
+              </div>
+              <div className="lr-clusters">
+                <div className="left-cluster">
+                  <h3>Left Cluster</h3>
+                  {clusters[1].map((c, i) => (
+                    <div key={i}>
+                      {c.length >= 7 ? c.slice(0, 7) + "..." : c}
+                    </div>
+                  ))}
+                </div>
+                <div className="right-cluster">
+                  <h3>Right Cluster</h3>
+                  {clusters[0].map((c, i) => (
+                    <div key={i}>
+                      {c.length >= 7 ? c.slice(0, 7) + "..." : c}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-            <div>
-              <h3>Right Cluster</h3>
-              {clusters[0].map((c, i) => (
-                <div key={i}>{c.length >= 7 ? c.slice(0, 7) + "..." : c}</div>
-              ))}
-            </div>
-            <div>
-              <h3>Left Cluster</h3>
-              {clusters[1].map((c, i) => (
-                <div key={i}>{c.length >= 7 ? c.slice(0, 7) + "..." : c}</div>
-              ))}
-            </div>
-          </div>
+          </>
         ) : null}
         {results && nodes.length === 0 ? null : null}
         {nodes.length === 1 && clicked === "node" ? (
