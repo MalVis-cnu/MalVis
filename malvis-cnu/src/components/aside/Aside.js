@@ -12,6 +12,7 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
   const pairs = {};
 
   if (results) {
+    console.log(results);
     asideRef.current.style.display = "flex";
   }
 
@@ -73,31 +74,82 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
         {results ? (
           <>
             <div style={{ paddingLeft: "8px", height: "3%" }}>
-              {"전체 실루엣 계수 : " + results.data.silhouette_score.toFixed(5)}
+              <span>
+                <strong>전체 실루엣 계수 : </strong>
+              </span>
+              <span>{results.data.silhouette_score.toFixed(5)}</span>
             </div>
             <div style={{ padding: "8px" }}>
               <h3 style={{ margin: "0 0 8px 0" }}>{"<<< 분석 옵션 >>>"}</h3>
               <div>
-                {"Similarity : " + results.data.option.similarity_method}
+                <span>
+                  <strong>Similarity : </strong>
+                </span>
+                <span>{results.data.option.similarity_method}</span>
               </div>
               <div>
-                {"n-gram : " + results.data.option.similarity_option.ngram}
+                <span>
+                  <strong>n-gram : </strong>
+                </span>
+                <span>{results.data.option.similarity_option.ngram}</span>
               </div>
               <div>
-                {"Clustering Algorithm : " +
-                  results.data.option.clustering_method}
+                <span>
+                  <strong>Clustering Algorithm : </strong>
+                </span>
+                <span>{results.data.option.clustering_method}</span>
               </div>
               <div>
-                {results.data.option.clustering_method === "hierarchical"
-                  ? "링크 방식 : " +
-                    results.data.option.clustering_option.linkage
-                  : "Max iteration : " +
-                    results.data.option.clustering_option.max_iteration}
+                {results.data.option.clustering_method === "hierarchical" ? (
+                  <>
+                    <span>
+                      <strong>링크 방식 : </strong>
+                    </span>
+                    <span>{results.data.option.clustering_option.linkage}</span>
+                  </>
+                ) : (
+                  <>
+                    <span>
+                      <strong>Max iteration : </strong>
+                    </span>
+                    <span>
+                      {results.data.option.clustering_option.max_iteration}
+                    </span>
+                  </>
+                )}
               </div>
               <div>
-                {"클러스터 개수 : " +
-                  (results.data.option.clustering_option.n_cluster ||
-                    results.data.option.clustering_option.k)}
+                <span>
+                  <strong>클러스터 개수 : </strong>
+                </span>
+                <span>
+                  {results.data.option.clustering_option.n_cluster ||
+                    results.data.option.clustering_option.k}
+                </span>
+              </div>
+              <div>
+                <span>
+                  <strong>데이터 파싱 소요시간 : </strong>
+                </span>
+                <span>{results.data.time.input_time}</span>
+              </div>
+              <div>
+                <span>
+                  <strong>유사도 계산 소요 시간 : </strong>
+                </span>
+                <span>{results.data.time.similarity_time}</span>
+              </div>
+              <div>
+                <span>
+                  <strong>클러스터링 소요 시간 : </strong>
+                </span>
+                <span>{results.data.time.clustering_time}</span>
+              </div>
+              <div>
+                <span>
+                  <strong>총 소요 시간 : </strong>
+                </span>
+                <span>{results.data.time.total_time}</span>
               </div>
             </div>
           </>
@@ -145,7 +197,9 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
                   {results.data.sequence_data[nodes[0].idx].map(
                     (api_idx, i) => (
                       <tr key={i}>
-                        <td className="border-line">{"t_" + i}</td>
+                        <td className="border-line">
+                          t<sub>{i}</sub>
+                        </td>
                         <td className="border-line">{api_idx}</td>
                       </tr>
                     )
@@ -160,11 +214,14 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
 
         {nodes.length === 2 && clicked === "node" ? (
           <>
-            <div
-              style={{ margin: "0 8px 8px 8px" }}
-            >{`두 악성코드 간 유사도: ${(
-              1 - results.data.distance_matrix[nodes[0].idx][nodes[1].idx]
-            ).toFixed(5)}`}</div>
+            <div style={{ margin: "0 8px 8px 8px" }}>
+              <span>
+                <strong>두 악성코드 간 유사도: </strong>
+              </span>
+              <span>{`${(
+                1 - results.data.distance_matrix[nodes[0].idx][nodes[1].idx]
+              ).toFixed(5)}`}</span>
+            </div>
             <div>
               <Accordion
                 header="API 시퀀스 비교"
@@ -189,7 +246,9 @@ const Aside = ({ nodes, results, clusters, clicked }) => {
                   <tbody className="">
                     {Object.keys(pairs).map((pair_num, i) => (
                       <tr key={i}>
-                        <td className="border-line">{"t_" + i}</td>
+                        <td className="border-line">
+                          t<sub>{i}</sub>
+                        </td>
                         <td className="border-line">{pairs[pair_num][0]}</td>
                         <td className="border-line">{pairs[pair_num][1]}</td>
                       </tr>
