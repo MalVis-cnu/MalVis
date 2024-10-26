@@ -53,7 +53,9 @@ const Main = memo(({ data, result, onSendDetail, onSendClusters }) => {
       documentElement.call(zoomer);
 
       // 덴드로그램을 위한  계층 구조 생성
-      const clusterLayout = d3.cluster().size([height, width - 100]);
+      const clusterLayout = d3
+        .cluster()
+        .size([33 * result.data.distance_matrix.length, width - 100]);
 
       const root = d3.hierarchy(data, function (d) {
         return d.children;
