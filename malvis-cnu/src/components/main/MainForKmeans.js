@@ -14,7 +14,6 @@ const MainForKmeans = memo(({ data, onSendDetail }) => {
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     if (data) {
-      console.log(data);
       const currentElement = ref.current;
 
       // zoom 기능 정의
@@ -38,7 +37,7 @@ const MainForKmeans = memo(({ data, onSendDetail }) => {
         .append("svg")
         .attr("viewBox", `0, 0, ${width}, ${height}`)
         .on("click", function (event) {
-          if (event.target.tagName === 'svg') {
+          if (event.target.tagName === "svg") {
             d3.selectAll("line").attr("stroke", "#999");
 
             // 선택된 노드 복원
@@ -87,7 +86,6 @@ const MainForKmeans = memo(({ data, onSendDetail }) => {
         .join("line")
         .attr("stroke-width", 2)
         .on("click", function (event, info) {
-          console.log(info);
           // 기존 라인 색상 복원
           d3.selectAll("line").attr("stroke", "#999");
 
@@ -165,7 +163,6 @@ const MainForKmeans = memo(({ data, onSendDetail }) => {
           const clicked = d3.selectAll("circle").filter(function () {
             return d3.select(this).attr("fill") === "red";
           })._groups[0];
-          console.log(clicked);
 
           // 라인 색상 원래대로 복원
           d3.selectAll("line").attr("stroke", "#999");
@@ -193,8 +190,45 @@ const MainForKmeans = memo(({ data, onSendDetail }) => {
           .on("end", dragended)
       );
 
+      // 각 클러스터의 중심 노드 찾기
+      const centerNodes = [];
+      links.forEach((link) => {
+        if (!centerNodes.includes(link.source.id)) {
+          centerNodes.push(link.source.id);
+        }
+      });
+
+      // 그룹별로 노드 분류
+      const classifiedNodes = {};
+      for (let i = 0; i < centerNodes.length; i++) {
+        classifiedNodes[i] = [];
+      }
+
+      nodes.forEach((node) => {
+        classifiedNodes[node.group].push(node);
+      });
+
       // Set the position attributes of links and nodes each time the simulation ticks.
       function ticked() {
+        for (let i = 0; i < centerNodes.length; i++) {
+          const centerNode = classifiedNodes[i].filter((node) =>
+            centerNodes.includes(node.id)
+          )[0];
+          const angleStep = (2 * Math.PI) / classifiedNodes[i].length;
+
+          classifiedNodes[i].forEach((node, i) => {
+            const radius =
+              links.filter((link) => link.target.id === node.id)[0].length *
+                100 +
+              100;
+            if (!centerNodes.includes(node.id)) {
+              const angle = i * angleStep;
+              node.x = centerNode.x + radius * Math.cos(angle);
+              node.y = centerNode.y + radius * Math.sin(angle);
+            }
+          });
+        }
+
         link
           .attr("x1", (d) => d.source.x)
           .attr("y1", (d) => d.source.y)

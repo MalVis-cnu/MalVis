@@ -44,10 +44,10 @@ const Layout = () => {
       setNodes([]);
       setClusters(null);
       if (algorithm === "hierarchical") {
-        setVisual('dendrogram'); 
+        setVisual("dendrogram");
         setDataForVisualizing(processResult(result.data));
       } else if (algorithm === "kmeans") {
-        setVisual('plot');  
+        setVisual("plot");
         setDataForVisualizing(processKmeans(result.data));
       }
     } catch (error) {
@@ -80,12 +80,15 @@ const Layout = () => {
 
   const toggleMain = () => {
     if (visual === "dendrogram") {
-      setVisual('plot');
+      setVisual("plot");
       setDataForVisualizing(processKmeans(result.data));
     } else if (visual === "plot") {
-      setVisual('dendrogram');
+      setVisual("dendrogram");
       setDataForVisualizing(processResult(result.data));
     }
+    setClicked("");
+    setClusters(null);
+    setNodes([]);
   };
 
   return (
@@ -96,11 +99,39 @@ const Layout = () => {
       onDragOver={onDragOver}
       onDrop={dropFileHandler}
     >
-      {(result && result.data.option.clustering_method === "hierarchical") ?
-        ((visual === 'dendrogram') ?
-        (<button style={{ position:'absolute', left:'50%', right:'50%', width:'200px', height:'50px', zIndex:'100'}}onClick={toggleMain}>산포도 시각화</button>) :
-        (<button style={{ position:'absolute', left:'50%', right:'50%', width:'200px', height:'50px', zIndex:'100'}}onClick={toggleMain}>덴드로그램 시각화</button>))
-      : (<></>)}
+      {result && result.data.option.clustering_method === "hierarchical" ? (
+        visual === "dendrogram" ? (
+          <button
+            style={{
+              position: "absolute",
+              left: "50%",
+              right: "50%",
+              width: "200px",
+              height: "50px",
+              zIndex: "100",
+            }}
+            onClick={toggleMain}
+          >
+            산포도 시각화
+          </button>
+        ) : (
+          <button
+            style={{
+              position: "absolute",
+              left: "50%",
+              right: "50%",
+              width: "200px",
+              height: "50px",
+              zIndex: "100",
+            }}
+            onClick={toggleMain}
+          >
+            덴드로그램 시각화
+          </button>
+        )
+      ) : (
+        <></>
+      )}
       <Aside
         className="aside"
         nodes={nodes}
@@ -108,8 +139,7 @@ const Layout = () => {
         clusters={clusters}
         clicked={clicked}
       />
-      {
-      visual === "dendrogram" ? (
+      {visual === "dendrogram" ? (
         <Main
           data={dataForVisualizing}
           result={result}
